@@ -62,6 +62,8 @@ body { font-family: Arial, Helvetica, FreeSans, sans-serif; }
   font-size: 120%;;
 }
 
+* {box-sizing: border-box}
+
 .tab {
     float: left;
     border: 1px solid #ccc;
