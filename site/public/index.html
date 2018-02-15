@@ -1,11 +1,38 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
   lang="en-GB" xml:lang="en-GB">
-<head>
-<meta charset="UTF-8"/>
-<title>Put Title Here</title>
-</head>
-<body>
-<h1>Put Heading Here</h1>
-</body>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Title: Homepage</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <header>
+      <div class="site-top">
+        <div id="logo">
+          <a href="#home">LOGO</a>
+        </div>
+        <div id="top-navbar">
+          <a href="#news" class="top-button">News</a>
+          <a href="#disc" class="top-button">Discussion</a>
+          <a href="#about" class="top-button">About</a>
+          <div class="search-container">
+            <input type="text" placeholder="Search..."/>
+            <button type="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="tab">
+      <div class="tabcontent" display='inline-block'>
+        <button class="tablinks">Item1</button>
+        <button class="tablinks">Item2</button>
+        <button class="tablinks">Item3</button>
+      </div>
+      <div id="Item1" class="tabcontent" display='inline-block'>
+        <h3>Item1</h3>
+        <p>Description of Item1</p>
+      </div>
+    </div>
+  </body>
 </html>
