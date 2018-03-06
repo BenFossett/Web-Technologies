@@ -112,20 +112,68 @@ header {
   width: 100%;
 }
 
-.top-threads {
+.boards-box {
   display: block;
   text-align: left;
   float: left;
   width: 59%;
   height: 300px;
   box-shadow: 0 0 8px 3px;
+  margin-top: 10px;
 }
 
-.stats {
+.box-title {
+  display: block;
+  text-align: left;
+  background-color: red;
+  padding: 8px 12px 8px 12px;
+  color: white;
+}
+
+.box-title div { display: inline;}
+
+.floatleftdivnow {float:right;
+                  width: 30%;}
+
+.box-title p {
+  margin: 0;
+  text-align: right
+}
+
+
+.board-item {
+  display: block;
+  text-align: left;
+  font-size: 80%;
+  margin: 10px 10px 10px 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid;
+  border-color: black;
+}
+
+.board-item p {
+  margin: 2px;
+}
+
+.board-item strong {
+  margin-left: 5px;
+}
+
+.top-discussions {
   display: block;
   text-align: left;
   float: right;
   width: 39%;
   height: 300px;
   box-shadow: 0 0 8px 3px;
+  margin-top: 10px;
+}
+
+.top-discussions span {
+  float: right;
+}
+
+.top-item {
+  padding: 0 12px 0 12px;
+  word-wrap: break-word;
 }
