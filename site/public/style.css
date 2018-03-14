@@ -122,25 +122,12 @@ header {
   margin-top: 10px;
 }
 
-.box-title {
-  display: block;
-  text-align: left;
-  background-color: red;
+.boards-box .box-title {
   padding: 8px 12px 8px 12px;
-  color: white;
 }
-
-.box-title div { display: inline;}
-
-.floatleftdivnow {float:right;
-                  width: 30%;}
-
 .box-title p {
-  margin: 0;
-  text-align: right
+  margin: 0px;
 }
-
-
 .board-item {
   display: block;
   text-align: left;
@@ -151,6 +138,7 @@ header {
   border-color: black;
 }
 
+
 .board-item p {
   margin: 2px;
 }
@@ -158,7 +146,6 @@ header {
 .board-item strong {
   margin-left: 5px;
 }
-
 .top-discussions {
   display: block;
   text-align: left;
@@ -169,11 +156,42 @@ header {
   margin-top: 10px;
 }
 
-.top-discussions span {
-  float: right;
+
+.top-discussions > div {
+  padding: 8px 12px 8px 12px;
+}
+
+.box-title {
+  background-color: red;
+  color: white;
+}
+
+.box-title div {
+  display: inline-block;
+}
+
+.top-discussions .left-column {
+  width: 70%;
+  float:left;
+}
+
+.top-discussions .right-column {
+  width: 30%;
+}
+
+.top-discussions p {
+  margin: 0;
+}
+
+.top-discussions .right-column p {
+  text-align: right;
 }
 
 .top-item {
   padding: 0 12px 0 12px;
   word-wrap: break-word;
+}
+
+.top-item div {
+  display: inline-block;
 }
