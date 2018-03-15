@@ -1,11 +1,82 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
   lang="en-GB" xml:lang="en-GB">
-<head>
-<meta charset="UTF-8"/>
-<title>Put Title Here</title>
-</head>
-<body>
-<h1>Put Heading Here</h1>
-</body>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Title: Homepage</title>
+    <link href="/mainstyle.css" rel="stylesheet" type="text/css" />
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <header>
+      <div id="logo">
+        <a href="index.html">LOGO</a>
+      </div>
+      <div id="top-navbar">
+        <a href="#" class="top-button">News</a>
+        <a href="#" class="top-button">Discussion</a>
+        <a href="#" class="top-button">About</a>
+        <div class="search-container">
+          <input type="text" placeholder="Search..."/>
+          <button type="submit">Submit</button>
+        </div>
+      </div>
+    </header>
+    <div class="main">
+      <div class="tab-container">
+        <div id="Item1" class="tabcontent" display="block">
+          <h3>Featured Item 1</h3>
+          <p>Description of Item1</p>
+        </div>
+        <div id="Item2" class="tabcontent">
+          <h3>Featured Item 2</h3>
+          <p>Description of Item2</p>
+        </div>
+        <div id="Item3" class="tabcontent">
+          <h3>Featured Item 3</h3>
+          <p>Description of Item3</p>
+        </div>
+        <div id="Item4" class="tabcontent">
+          <h3>Featured Item 4</h3>
+          <p>Description of Item4</p>
+        </div>
+        <div class="tab">
+            <button class="tablinks" id="Tab1">Item1</button>
+            <button class="tablinks" id="Tab2">Item2</button>
+            <button class="tablinks" id="Tab3">Item3</button>
+            <button class="tablinks" id="Tab4">Item4</button>
+        </div>
+      </div>
+      <div class="table-container">
+        <div class="table-a boards-box">
+          <div class="box-title">
+           <p>Boards</p>
+          </div>
+          <div class="boards-list">
+            <div class="board-item">
+              <a href="board.html"><p><strong>Board 1</strong></p></a>
+              <p>Description of Board 1</p>
+            </div>
+            <div class="board-item">
+              <p><strong>Board 2</strong></p>
+              <p>Description of Board 2</p>
+            </div>
+          </div>
+        </div>
+        <div class="top-discussions">
+          <div class="box-title">
+           <div class='left-column'><p>Top Discussions</p></div> <div class='right-column'><p>Posts</p></div>
+          </div>
+          <div class="top-item">
+            <div class='left-column'><p><strong>Thread 1</strong></p></div>
+            <div class='right-column'><p>100</p></div>
+          </div>
+          <div class="top-item">
+            <div class='left-column'><p><strong>Thread 2</strong></p></div>
+            <div class='right-column'><p>1100</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
