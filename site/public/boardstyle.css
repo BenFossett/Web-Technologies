@@ -1,0 +1,42 @@
+.thread-list .box-title {
+  padding: 10px 22px 10px 22px;
+}
+
+.thread-column {
+  width: 58%;
+}
+
+.latest-column {
+  width: 30%;
+}
+
+.posts-column {
+  width: 10%;
+}
+
+.post-column p {
+  text-align: right;
+}
+
+.threads-item div {
+  display: inline-block;
+}
+
+.threads-item {
+  padding-bottom: 5px;
+  border-bottom: 1px solid;
+  border-color: black;
+  margin: 10px 10px 10px 10px;
+}
+
+.threads-item > div {
+  vertical-align:top;
+}
+.threads-item p {
+  margin: 0px;
+}
+
+.threads-item small {
+  font-size: 75%;
+  color: grey;
+}
