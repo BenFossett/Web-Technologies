@@ -13,6 +13,7 @@
 // Choose a port, e.g. change the port to the default 80, if there are no
 // privilege issues and port number 80 isn't already in use. Choose verbose to
 // list banned files (with upper case letters) on startup.
+"use strict";
 
 var port = 8080;
 var verbose = true;
@@ -25,7 +26,12 @@ var http = require("http");
 var fs = require("fs");
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned;
-start();
+
+// Load the database
+var sql = require("sqlite3");
+var db = new sql.Database("data.db");
+
+db.serialize(create);
 
 // Start the http service. Accept only requests from localhost, for security.
 function start() {
@@ -152,3 +158,21 @@ function defineTypes() {
     }
     return types;
 }
+
+function create() {
+  db.run("drop table if exists categories");
+  db.run("drop table if exists boards");
+  db.run("drop table if exists threads");
+  db.run("drop table if exists posts");
+
+  db.run("create table categories (cId, name, primary key (cId))");
+  db.run("insert into categories values (1, 'Main Boards')");
+
+  db.run("create table boards (bId, cId, name, primary key (bId), foreign key (cId) references categories (cId))");
+  db.run("insert into boards values (1, 1, 'UK Politics')");
+
+  db.run("create table threads (tId, bId, name, creationDate, primary key(tId), foreign key (bId) references boards (bId))");
+  db.run("create table posts (pId, tId, content, creationDate, primary key(pId), foreign key (tId) references threads (tId))");
+}
+
+start();
