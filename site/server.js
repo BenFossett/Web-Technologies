@@ -59,7 +59,10 @@ function checkSite() {
 // Serve a request by delivering a file.
 function handle(request, response) {
     var url = request.url.toLowerCase();
+    console.log("url=", url);
     if (url.endsWith("/")) url = url + "index.html";
+    if (url.startsWith("/board.html")) return getBoard(url, response);
+    //else getFile(url, response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
     if (type == null) return fail(response, BadType, "File type unsupported");
@@ -159,20 +162,54 @@ function defineTypes() {
     return types;
 }
 
+function getBoard(url, response) {
+  fs.readFile("./board.html", "utf8", ready);
+  function ready(err, content) {
+    getData(content, url, response);
+  }
+}
+
+function getData(text, url, response) {
+  var parts = url.split("=");
+  var bId = parts[1];
+  var ps = db.prepare("select name from boards where bId=?");
+  ps.get(bId, ready);
+  function ready(err, obj) { prepare(text, obj, response); }
+}
+
+function prepare(text, data, response) {
+  var parts = text.split("$");
+  var page = parts[0] + data.name + parts[1] + data.name + parts[2];
+  deliver(response, types.html, null, page);
+}
+
+// Prepared statements for use in database
+
 function create() {
+  db.run("drop table if exists users")
   db.run("drop table if exists categories");
   db.run("drop table if exists boards");
   db.run("drop table if exists threads");
   db.run("drop table if exists posts");
 
-  db.run("create table categories (cId, name, primary key (cId))");
-  db.run("insert into categories values (1, 'Main Boards')");
+  db.run("create table users (uId, name, email, password)");
+  db.run("insert into users values (1, 'Test User', 'testuser@example.com', 'Password')");
 
-  db.run("create table boards (bId, cId, name, primary key (bId), foreign key (cId) references categories (cId))");
-  db.run("insert into boards values (1, 1, 'UK Politics')");
+  db.run("create table categories (cId, name, primary key (cId))");
+  db.run("insert into categories values (1, 'Test Category')");
+
+  db.run("create table boards (bId int, cId int, name text, primary key (bId), foreign key (cId) references categories (cId))");
+  db.run("insert into boards values (1, 1, 'Board A')");
+  db.run("insert into boards values (2, 1, 'Board B')");
+  db.run("insert into boards values (3, 1, 'Board C')");
+  db.run("insert into boards values (4, 1, 'Board D')");
+  db.run("insert into boards values (5, 1, 'Board E')");
 
   db.run("create table threads (tId, bId, name, creationDate, primary key(tId), foreign key (bId) references boards (bId))");
-  db.run("create table posts (pId, tId, content, creationDate, primary key(pId), foreign key (tId) references threads (tId))");
+  db.run("insert into threads values (1, 1, 'Test Thread', datetime('now'))");
+
+  db.run("create table posts (pId, tId, uId, content, creationDate, primary key(pId), foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
+  db.run("insert into posts values (1, 1, 1, 'Test Post', datetime('now'))");
 }
 
 start();
