@@ -61,6 +61,7 @@ function handle(request, response) {
     var url = request.url.toLowerCase();
     console.log("url=", url);
     if (url.endsWith("/")) url = url + "index.html";
+    if (url == "/boards") return getBoardList(response);
     if (url.startsWith("/board.html")) return getBoard(url, response);
     //else getFile(url, response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
@@ -183,11 +184,21 @@ function prepare(text, data, response) {
   deliver(response, types.html, null, page);
 }
 
+function getBoardList(response) {
+  var ps = db.prepare("select * from boards");
+  ps.all(ready);
+  function ready(err, list) { deliverList(list, response); }
+}
+
+function deliverList(list, response) {
+  var text = JSON.stringify(list);
+  deliver(response, types.txt, null, text);
+}
+
 // Prepared statements for use in database
 
 function create() {
   db.run("drop table if exists users")
-  db.run("drop table if exists categories");
   db.run("drop table if exists boards");
   db.run("drop table if exists threads");
   db.run("drop table if exists posts");
@@ -195,15 +206,12 @@ function create() {
   db.run("create table users (uId, name, email, password)");
   db.run("insert into users values (1, 'Test User', 'testuser@example.com', 'Password')");
 
-  db.run("create table categories (cId, name, primary key (cId))");
-  db.run("insert into categories values (1, 'Test Category')");
-
-  db.run("create table boards (bId int, cId int, name text, primary key (bId), foreign key (cId) references categories (cId))");
-  db.run("insert into boards values (1, 1, 'Board A')");
-  db.run("insert into boards values (2, 1, 'Board B')");
-  db.run("insert into boards values (3, 1, 'Board C')");
-  db.run("insert into boards values (4, 1, 'Board D')");
-  db.run("insert into boards values (5, 1, 'Board E')");
+  db.run("create table boards (bId int, name text, description text, primary key (bId))");
+  db.run("insert into boards values (1, 'Forum Information', 'Forum announcements and guidelines are found here')");
+  db.run("insert into boards values (2, 'UK Politics', 'Discussion related to poltical happenings in the United Kingdom')");
+  db.run("insert into boards values (3, 'US Politics', 'Discussion surrounding the politics of the United States')");
+  db.run("insert into boards values (4, 'Off Topic', 'If it does not relate to political discussion, it goes here')");
+  db.run("insert into boards values (5, 'Support', 'Have feedback for the forum, or other queries? Post it here')");
 
   db.run("create table threads (tId, bId, name, creationDate, primary key(tId), foreign key (bId) references boards (bId))");
   db.run("insert into threads values (1, 1, 'Test Thread', datetime('now'))");
