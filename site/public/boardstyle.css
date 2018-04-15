@@ -1,9 +1,13 @@
-.thread-list .box-title {
+.thread-list-wrapper {
+  height: 500px;
+}
+
+.thread-list-wrapper .box-title {
   padding: 10px 22px 10px 22px;
 }
 
 .thread-column {
-  width: 58%;
+  width: 59%;
 }
 
 .latest-column {

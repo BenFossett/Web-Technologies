@@ -11,10 +11,10 @@ function start() {
   }
 
   document.getElementById("Tab1").click();
-  fetchData();
+  fetchBoards();
 }
 
-function fetchData() {
+function fetchBoards() {
   var q = new XMLHttpRequest();
   q.onreadystatechange = receive;
   q.open("GET", "/boards", true);
@@ -27,11 +27,17 @@ function receive() {
   var html = "";
   var i;
   for(i = 0; i < list.length; i++) {
-    var item = '<div class="board-item"><a href="board.html?id=' + list[i].bId + '"><p><strong>' + list[i].name + '</strong></p></a><p>' + list[i].description + '</p></div>';
+    var item = '<div class="board-item"><a href="board.html?id='
+               + list[i].bId
+               + '"><p><strong>'
+               + list[i].name
+               + '</strong></p></a><p>'
+               + list[i].description
+               + '</p></div>';
     html = html + item;
   }
-  var ul = document.querySelector(".boards-list");
-  ul.innerHTML = html;
+  var list = document.querySelector(".boards-list");
+  list.innerHTML = html;
 }
 
 function openTab(name) {
