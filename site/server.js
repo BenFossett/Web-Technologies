@@ -13,6 +13,7 @@
 // Choose a port, e.g. change the port to the default 80, if there are no
 // privilege issues and port number 80 isn't already in use. Choose verbose to
 // list banned files (with upper case letters) on startup.
+"use strict";
 
 var port = 8080;
 var verbose = true;
@@ -25,7 +26,12 @@ var http = require("http");
 var fs = require("fs");
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned;
-start();
+
+// Load the database
+var sql = require("sqlite3");
+var db = new sql.Database("data.db");
+
+db.serialize(create);
 
 // Start the http service. Accept only requests from localhost, for security.
 function start() {
@@ -53,7 +59,12 @@ function checkSite() {
 // Serve a request by delivering a file.
 function handle(request, response) {
     var url = request.url.toLowerCase();
+    console.log("url=", url);
     if (url.endsWith("/")) url = url + "index.html";
+    if (url == "/boards") return getBoardList(response);
+    if (url.startsWith("/board.html")) return getBoard(url, response);
+    if (url.startsWith("/threads")) return getThreadList(url, response);
+    //else getFile(url, response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
     if (type == null) return fail(response, BadType, "File type unsupported");
@@ -152,3 +163,99 @@ function defineTypes() {
     }
     return types;
 }
+
+function getBoard(url, response) {
+  fs.readFile("./board.html", "utf8", ready);
+  function ready(err, content) {
+    getData(content, url, response);
+  }
+}
+
+function getData(text, url, response) {
+  var parts = url.split("=");
+  var bId = parts[1];
+  var ps = db.prepare("select name from boards where bId=?");
+  ps.get(bId, ready);
+  function ready(err, obj) { prepare(text, obj, response); }
+}
+
+function prepare(text, data, response) {
+  var parts = text.split("$");
+  var page = parts[0] + data.name + parts[1] + data.name + parts[2];
+  deliver(response, types.html, null, page);
+}
+
+function getBoardList(response) {
+  var ps = db.prepare("select * from boards");
+  ps.all(ready);
+  function ready(err, list) { deliverList(list, response); }
+}
+
+function getThreadList(url, response) {
+  var parts = url.split("=");
+  var bId = parts[1];
+  var ps = db.prepare("select * from threads where bId=?")
+  ps.all(bId, ready);
+  function ready(err, list) { deliverList(list, response); }
+}
+
+function deliverList(list, response) {
+  var text = JSON.stringify(list);
+  deliver(response, types.txt, null, text);
+}
+
+// Prepared statements for use in database
+
+function create() {
+  db.run("drop table if exists users")
+  db.run("drop table if exists boards");
+  db.run("drop table if exists threads");
+  db.run("drop table if exists posts");
+
+  db.run("create table users (uId, name, email, password)");
+  db.run("insert into users values (1, 'Test User', 'testuser@example.com', 'Password')");
+
+  db.run("create table boards (bId int, name text, description text, primary key (bId))");
+  db.run("insert into boards values (1, 'Forum Information', 'Forum announcements and guidelines are found here')");
+  db.run("insert into boards values (2, 'UK Politics', 'Discussion related to poltical happenings in the United Kingdom')");
+  db.run("insert into boards values (3, 'US Politics', 'Discussion surrounding the politics of the United States')");
+  db.run("insert into boards values (4, 'Off Topic', 'If it does not relate to political discussion, it goes here')");
+  db.run("insert into boards values (5, 'Support', 'Have feedback for the forum, or other queries? Post it here')");
+
+  db.run("create table threads (tId int, bId int, name text, creationDate datetime, primary key(tId), foreign key (bId) references boards (bId))");
+  db.run("insert into threads values (1, 1, 'Forum Announcement #1', datetime('now'))");
+  db.run("insert into threads values (2, 1, 'Forum Announcement #2', datetime('now'))");
+  db.run("insert into threads values (3, 1, 'Forum Announcement #3', datetime('now'))");
+  db.run("insert into threads values (4, 1, 'Forum Announcement #4', datetime('now'))");
+  db.run("insert into threads values (5, 1, 'Forum Announcement #5', datetime('now'))");
+  db.run("insert into threads values (6, 1, 'Forum Announcement #6', datetime('now'))");
+  db.run("insert into threads values (7, 2, 'UK Discussion #1', datetime('now'))");
+  db.run("insert into threads values (8, 2, 'UK Discussion #2', datetime('now'))");
+  db.run("insert into threads values (9, 2, 'UK Discussion #3', datetime('now'))");
+  db.run("insert into threads values (10, 2, 'UK Discussion #4', datetime('now'))");
+  db.run("insert into threads values (11, 2, 'UK Discussion #5', datetime('now'))");
+  db.run("insert into threads values (12, 2, 'UK Discussion #6', datetime('now'))");
+  db.run("insert into threads values (13, 3, 'US Discussion #1', datetime('now'))");
+  db.run("insert into threads values (14, 3, 'US Discussion #2', datetime('now'))");
+  db.run("insert into threads values (15, 3, 'US Discussion #3', datetime('now'))");
+  db.run("insert into threads values (16, 3, 'US Discussion #4', datetime('now'))");
+  db.run("insert into threads values (17, 3, 'US Discussion #5', datetime('now'))");
+  db.run("insert into threads values (18, 3, 'US Discussion #6', datetime('now'))");
+  db.run("insert into threads values (19, 4, 'Off Topic Discussion #1', datetime('now'))");
+  db.run("insert into threads values (20, 4, 'Off Topic Discussion #2', datetime('now'))");
+  db.run("insert into threads values (21, 4, 'Off Topic Discussion #3', datetime('now'))");
+  db.run("insert into threads values (22, 4, 'Off Topic Discussion #4', datetime('now'))");
+  db.run("insert into threads values (23, 4, 'Off Topic Discussion #5', datetime('now'))");
+  db.run("insert into threads values (24, 4, 'Off Topic Discussion #6', datetime('now'))");
+  db.run("insert into threads values (25, 5, 'Forum Complaint', datetime('now'))");
+  db.run("insert into threads values (26, 5, 'Forum Suggestion', datetime('now'))");
+  db.run("insert into threads values (27, 5, 'Forum Question', datetime('now'))");
+  db.run("insert into threads values (28, 5, 'Forum Bug Report', datetime('now'))");
+  db.run("insert into threads values (29, 5, 'Forum User Complaint', datetime('now'))");
+  db.run("insert into threads values (30, 5, 'Forum Suggestion', datetime('now'))");
+
+  db.run("create table posts (pId, tId, uId, content, creationDate, primary key(pId), foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
+  db.run("insert into posts values (1, 1, 1, 'Test Post', datetime('now'))");
+}
+
+start();
