@@ -17,7 +17,7 @@ function getbId() {
 function fetchThreads(bId) {
   var q = new XMLHttpRequest();
   q.onreadystatechange = receive;
-  q.open("GET", "/threads?bId=" + bId, true);
+  q.open("GET", "/threadslist?bId=" + bId, true);
   q.send();
 }
 
@@ -28,7 +28,9 @@ function receive() {
   var html = "";
   var i;
   for(i = 0; i < list.length; i++) {
-    var item = '<div class="threads-item"><div class="thread-column"><a href="#"><p><strong>'
+    var item = '<div class="threads-item"><div class="thread-column"><a href="thread.html?id='
+               + list[i].tId
+               +'"><p><strong>'
                + list[i].name
                + '</strong></p></a><p><small>Created by: '
                + 'thread creator'

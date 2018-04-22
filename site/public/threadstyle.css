@@ -1,0 +1,61 @@
+.post-list-wrapper .box-title {
+  padding: 10px 22px 10px 22px;
+}
+
+.post-item {
+  background-color: whitesmoke;
+  margin-bottom: 10px;
+}
+
+.post-content {
+  height: 100%;
+}
+
+.post-content div {
+  display: inline-block;
+  min-height: 150px;
+}
+
+.user-column {
+  background-color: lightgrey;
+  float: left;
+  width: 30%;
+  text-align: center;
+}
+
+.user-column h4 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.user-column img {
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
+}
+
+.text-column {
+  width: 69%;
+  padding: 10px;
+  border-left: 1px solid;
+  border-color: grey;
+}
+
+.post-content p {
+  margin: 0;
+  word-wrap: break-word;
+}
+
+.new-post {
+  align-self: right;
+}
+
+.text-box textarea {
+  width: 80%;
+  margin-top: 25px;
+  resize: vertical;
+}
+
+.text-box input {
+  display: block;
+}

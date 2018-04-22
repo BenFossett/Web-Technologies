@@ -63,7 +63,8 @@ function handle(request, response) {
     if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
     if (url.startsWith("/board.html")) return getBoard(url, response);
-    if (url.startsWith("/threads")) return getThreadList(url, response);
+    if (url.startsWith("/threadslist")) return getThreadList(url, response);
+    if (url.startsWith("/thread.html")) return getThread(url, response);
     //else getFile(url, response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
@@ -167,15 +168,30 @@ function defineTypes() {
 function getBoard(url, response) {
   fs.readFile("./board.html", "utf8", ready);
   function ready(err, content) {
-    getData(content, url, response);
+    getBoardData(content, url, response);
   }
 }
 
-function getData(text, url, response) {
+function getBoardData(text, url, response) {
   var parts = url.split("=");
   var bId = parts[1];
   var ps = db.prepare("select name from boards where bId=?");
   ps.get(bId, ready);
+  function ready(err, obj) { prepare(text, obj, response); }
+}
+
+function getThread(url, response) {
+  fs.readFile("./thread.html", "utf8", ready);
+  function ready(err, content) {
+    getThreadData(content, url, response);
+  }
+}
+
+function getThreadData(text, url, response) {
+  var parts = url.split("=");
+  var tId = parts[1];
+  var ps = db.prepare("select name from threads where tId=?")
+  ps.get(tId, ready);
   function ready(err, obj) { prepare(text, obj, response); }
 }
 
