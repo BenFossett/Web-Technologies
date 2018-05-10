@@ -65,6 +65,7 @@ function handle(request, response) {
     if (url.startsWith("/board.html")) return getBoard(url, response);
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
+    if (url.startsWith("/postslist")) return getPostList(url, response);
     //else getFile(url, response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
@@ -210,8 +211,16 @@ function getBoardList(response) {
 function getThreadList(url, response) {
   var parts = url.split("=");
   var bId = parts[1];
-  var ps = db.prepare("select * from threads where bId=?")
+  var ps = db.prepare("select * from threads where bId=?");
   ps.all(bId, ready);
+  function ready(err, list) { deliverList(list, response); }
+}
+
+function getPostList(url, response) {
+  var parts = url.split("=");
+  var tId = parts[1];
+  var ps = db.prepare("select posts.content, users.name from posts inner join users on posts.uId = users.uId where tId=?");
+  ps.all(tId, ready);
   function ready(err, list) { deliverList(list, response); }
 }
 
@@ -228,7 +237,9 @@ function create() {
   db.run("drop table if exists threads");
   db.run("drop table if exists posts");
 
-  db.run("create table users (uId, name, email, password)");
+  db.run("create table users (uId int, name text, email text, password text)");
+  db.run("insert into users values (1, 'MemeLord420', 'name1@example.com', 'badpassword')");
+  db.run("insert into users values (2, 'TrumpFan69', 'name2@example.com', 'badpassword')");
 
   db.run("create table boards (bId int, name text, description text, primary key (bId))");
   db.run("insert into boards values (1, 'Board #1', 'First example board')");
@@ -269,7 +280,13 @@ function create() {
   db.run("insert into threads values (29, 5, 'Board #5 Thread E', datetime('now'))");
   db.run("insert into threads values (30, 5, 'Board #5 Thread F', datetime('now'))");
 
-  db.run("create table posts (pId, tId, uId, content, creationDate, primary key(pId), foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
+  db.run("create table posts (pId int, tId int, uId int, content text, creationDate datetime, primary key(pId), foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
+  db.run("insert into posts values (1, 1, 1, 'hello', datetime('now'))");
+  db.run("insert into posts values (2, 1, 2, 'hi friend how are u', datetime('now'))");
+  db.run("insert into posts values (3, 1, 1, 'good thanks u', datetime('now'))");
+  db.run("insert into posts values (4, 1, 2, 'not bad my good friend', datetime('now'))");
+  db.run("insert into posts values (5, 1, 1, 'i love cows', datetime('now'))");
+  db.run("insert into posts values (6, 1, 2, 'same tbh', datetime('now'))");
 }
 
 start();

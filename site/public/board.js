@@ -24,7 +24,6 @@ function fetchThreads(bId) {
 function receive() {
   if (this.readyState != 4) return;
   var list = JSON.parse(this.responseText);
-  console.log(list.length);
   var html = "";
   var i;
   for(i = 0; i < list.length; i++) {

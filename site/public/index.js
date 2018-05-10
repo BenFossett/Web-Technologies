@@ -43,8 +43,6 @@ function receive() {
 function openTab(name) {
     var i, tabcontent, tablinks;
 
-    console.log(name);
-
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
