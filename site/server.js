@@ -39,6 +39,7 @@ function start() {
     types = defineTypes();
     banned = [];
     banUpperCase("./public/", "");
+    banTraversal();
     var service = http.createServer(handle);
     service.listen(port, "localhost");
     var address = "http://localhost";
@@ -60,13 +61,12 @@ function checkSite() {
 function handle(request, response) {
     var url = request.url.toLowerCase();
     console.log("url=", url);
-    if (url.endsWith("/")) url = url + "index.html";
+    if (url.endsWith("/")) url = url + "/index.html";
     if (url == "/boards") return getBoardList(response);
     if (url.startsWith("/board.html")) return getBoard(url, response);
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
-    //else getFile(url, response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
     if (type == null) return fail(response, BadType, "File type unsupported");
@@ -82,6 +82,12 @@ function isBanned(url) {
         if (url.startsWith(b)) return true;
     }
     return false;
+}
+
+function banTraversal() {
+  banned.push("/./");
+  banned.push("/../");
+  banned.push("//");
 }
 
 // Find the content type to respond with, or undefined.
@@ -236,10 +242,11 @@ function create() {
   db.run("drop table if exists boards");
   db.run("drop table if exists threads");
   db.run("drop table if exists posts");
+  db.run("drop table if exists sessions");
 
-  db.run("create table users (uId int, name text, email text, password text)");
-  db.run("insert into users values (1, 'MemeLord420', 'name1@example.com', 'badpassword')");
-  db.run("insert into users values (2, 'TrumpFan69', 'name2@example.com', 'badpassword')");
+  db.run("create table users (uId int, name text, email text, password text, avatar text)");
+  db.run("insert into users values (1, 'MemeLord420', 'name1@example.com', 'badpassword', 'avi1.svg')");
+  db.run("insert into users values (2, 'TrumpFan69', 'name2@example.com', 'badpassword', 'avi2.svg')");
 
   db.run("create table boards (bId int, name text, description text, primary key (bId))");
   db.run("insert into boards values (1, 'Board #1', 'First example board')");
@@ -287,6 +294,8 @@ function create() {
   db.run("insert into posts values (4, 1, 2, 'not bad my good friend', datetime('now'))");
   db.run("insert into posts values (5, 1, 1, 'i love cows', datetime('now'))");
   db.run("insert into posts values (6, 1, 2, 'same tbh', datetime('now'))");
+
+  db.run("create table sessions (sId int, username text, key int, expiry, primary key (sId))");
 }
 
 start();
