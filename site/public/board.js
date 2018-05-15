@@ -27,6 +27,7 @@ function receive() {
   var html = "";
   var i;
   for(i = 0; i < list.length; i++) {
+    var count = list[i].c;
     var item = '<div class="threads-item"><div class="thread-column"><a href="thread.html?id='
                + list[i].tId
                +'"><p><strong>'
@@ -38,7 +39,7 @@ function receive() {
                + '</p><p><small>By: '
                + 'thread replier'
                + '</small></p></div><div class="posts-column"><p>'
-               + '0'
+               + count.toString()
                + '</p></div></div>';
     html = html + item;
   }

@@ -61,8 +61,9 @@ function checkSite() {
 function handle(request, response) {
     var url = request.url.toLowerCase();
     console.log("url=", url);
-    if (url.endsWith("/")) url = url + "/index.html";
+    if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
+    if (url == "/popularthreads") return getPopularThreads(response);
     if (url.startsWith("/board.html")) return getBoard(url, response);
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
@@ -214,10 +215,16 @@ function getBoardList(response) {
   function ready(err, list) { deliverList(list, response); }
 }
 
+function getPopularThreads(response) {
+  var ps = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
+  ps.all(ready);
+  function ready(err, list) { deliverList(list, response); }
+}
+
 function getThreadList(url, response) {
   var parts = url.split("=");
   var bId = parts[1];
-  var ps = db.prepare("select * from threads where bId=?");
+  var ps = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0");
   ps.all(bId, ready);
   function ready(err, list) { deliverList(list, response); }
 }
@@ -225,7 +232,7 @@ function getThreadList(url, response) {
 function getPostList(url, response) {
   var parts = url.split("=");
   var tId = parts[1];
-  var ps = db.prepare("select posts.content, users.name from posts inner join users on posts.uId = users.uId where tId=?");
+  var ps = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
   ps.all(tId, ready);
   function ready(err, list) { deliverList(list, response); }
 }
@@ -245,55 +252,39 @@ function create() {
   db.run("drop table if exists sessions");
 
   db.run("create table users (uId int, name text, email text, password text, avatar text)");
-  db.run("insert into users values (1, 'MemeLord420', 'name1@example.com', 'badpassword', 'avi1.svg')");
-  db.run("insert into users values (2, 'TrumpFan69', 'name2@example.com', 'badpassword', 'avi2.svg')");
+  db.run("insert into users values (1, 'PoliticsMan', 'name1@example.com', 'badpassword', 'avi1.svg')");
+  db.run("insert into users values (2, 'WebsiteGuy', 'name2@example.com', 'badpassword', 'avi2.svg')");
 
   db.run("create table boards (bId int, name text, description text, primary key (bId))");
-  db.run("insert into boards values (1, 'Board #1', 'First example board')");
-  db.run("insert into boards values (2, 'Board #2', 'Second example board')");
-  db.run("insert into boards values (3, 'Board #3', 'Third example board')");
-  db.run("insert into boards values (4, 'Board #4', 'Fourth example board')");
-  db.run("insert into boards values (5, 'Board #5', 'Fifth example board')");
+  db.run("insert into boards values (1, 'Forum News and Announcements', 'Information about the forum is found here')");
+  db.run("insert into boards values (2, 'U.S. Politics', 'Political discussion regarding the United States')");
+  db.run("insert into boards values (3, 'E.U. Politics', 'Political discussion regarding the European Union')");
+  db.run("insert into boards values (4, 'Off Topic', 'Non-Political Discussion')");
+  db.run("insert into boards values (5, 'Support', 'Feedback, bugs, complaints go here')");
 
   db.run("create table threads (tId int, bId int, name text, creationDate datetime, primary key(tId), foreign key (bId) references boards (bId))");
-  db.run("insert into threads values (1, 1, 'Board #1 Thread A', datetime('now'))");
-  db.run("insert into threads values (2, 1, 'Board #1 Thread B', datetime('now'))");
-  db.run("insert into threads values (3, 1, 'Board #1 Thread C', datetime('now'))");
-  db.run("insert into threads values (4, 1, 'Board #1 Thread D', datetime('now'))");
-  db.run("insert into threads values (5, 1, 'Board #1 Thread E', datetime('now'))");
-  db.run("insert into threads values (6, 1, 'Board #1 Thread F', datetime('now'))");
-  db.run("insert into threads values (7, 2, 'Board #2 Thread A', datetime('now'))");
-  db.run("insert into threads values (8, 2, 'Board #2 Thread B', datetime('now'))");
-  db.run("insert into threads values (9, 2, 'Board #2 Thread C', datetime('now'))");
-  db.run("insert into threads values (10, 2, 'Board #2 Thread D', datetime('now'))");
-  db.run("insert into threads values (11, 2, 'Board #2 Thread E', datetime('now'))");
-  db.run("insert into threads values (12, 2, 'Board #2 Thread F', datetime('now'))");
-  db.run("insert into threads values (13, 3, 'Board #3 Thread A', datetime('now'))");
-  db.run("insert into threads values (14, 3, 'Board #3 Thread B', datetime('now'))");
-  db.run("insert into threads values (15, 3, 'Board #3 Thread C', datetime('now'))");
-  db.run("insert into threads values (16, 3, 'Board #3 Thread D', datetime('now'))");
-  db.run("insert into threads values (17, 3, 'Board #3 Thread E', datetime('now'))");
-  db.run("insert into threads values (18, 3, 'Board #3 Thread F', datetime('now'))");
-  db.run("insert into threads values (19, 4, 'Board #4 Thread A', datetime('now'))");
-  db.run("insert into threads values (20, 4, 'Board #4 Thread B', datetime('now'))");
-  db.run("insert into threads values (21, 4, 'Board #4 Thread C', datetime('now'))");
-  db.run("insert into threads values (22, 4, 'Board #4 Thread D', datetime('now'))");
-  db.run("insert into threads values (23, 4, 'Board #4 Thread E', datetime('now'))");
-  db.run("insert into threads values (24, 4, 'Board #4 Thread F', datetime('now'))");
-  db.run("insert into threads values (25, 5, 'Board #5 Thread A', datetime('now'))");
-  db.run("insert into threads values (26, 5, 'Board #5 Thread B', datetime('now'))");
-  db.run("insert into threads values (27, 5, 'Board #5 Thread C', datetime('now'))");
-  db.run("insert into threads values (28, 5, 'Board #5 Thread D', datetime('now'))");
-  db.run("insert into threads values (29, 5, 'Board #5 Thread E', datetime('now'))");
-  db.run("insert into threads values (30, 5, 'Board #5 Thread F', datetime('now'))");
+  db.run("insert into threads values (1, 1, 'Forum Rules and Guidelines', datetime('now'))");
+  db.run("insert into threads values (2, 1, 'Introductions', datetime('now'))");
+  db.run("insert into threads values (3, 2, 'Gun Control Debate Thread', datetime('now'))");
+  db.run("insert into threads values (4, 3, 'Brexit Debate Thread', datetime('now'))");
+  db.run("insert into threads values (5, 4, 'Funniest Memes', datetime('now'))");
+  db.run("insert into threads values (6, 5, 'Planned Bugfixes', datetime('now'))");
+  db.run("insert into threads values (7, 2, 'Has Trump gone too far?', datetime('now'))");
+  db.run("insert into threads values (8, 3, 'May vs. Corbyn', datetime('now'))");
+  db.run("insert into threads values (9, 5, 'how do i make a post?', datetime('now'))");
+  db.run("insert into threads values (10, 2, 'Should the U.S. have universal healthcare?', datetime('now'))");
 
   db.run("create table posts (pId int, tId int, uId int, content text, creationDate datetime, primary key(pId), foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
-  db.run("insert into posts values (1, 1, 1, 'hello', datetime('now'))");
-  db.run("insert into posts values (2, 1, 2, 'hi friend how are u', datetime('now'))");
-  db.run("insert into posts values (3, 1, 1, 'good thanks u', datetime('now'))");
-  db.run("insert into posts values (4, 1, 2, 'not bad my good friend', datetime('now'))");
-  db.run("insert into posts values (5, 1, 1, 'i love cows', datetime('now'))");
-  db.run("insert into posts values (6, 1, 2, 'same tbh', datetime('now'))");
+  db.run("insert into posts values (1, 1, 1, 'rules', datetime('now'))");
+  db.run("insert into posts values (2, 2, 2, 'hello i am user', datetime('now'))");
+  db.run("insert into posts values (3, 3, 1, 'guns r bad', datetime('now'))");
+  db.run("insert into posts values (4, 4, 1, 'breakfast', datetime('now'))");
+  db.run("insert into posts values (5, 5, 2, 'pepe', datetime('now'))");
+  db.run("insert into posts values (6, 6, 2, 'get this damn site finished by monday', datetime('now'))");
+  db.run("insert into posts values (7, 7, 1, 'yes', datetime('now'))");
+  db.run("insert into posts values (8, 8, 1, 'pmqs', datetime('now'))");
+  db.run("insert into posts values (9, 9, 1, 'i dont no how please help me', datetime('now'))");
+  db.run("insert into posts values (10, 10, 1, 'should they???', datetime('now'))");
 
   db.run("create table sessions (sId int, username text, key int, expiry, primary key (sId))");
 }

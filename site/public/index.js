@@ -12,16 +12,17 @@ function start() {
 
   document.getElementById("Tab1").click();
   fetchBoards();
+  fetchPopularThreads();
 }
 
 function fetchBoards() {
   var q = new XMLHttpRequest();
-  q.onreadystatechange = receive;
+  q.onreadystatechange = receiveBoards;
   q.open("GET", "/boards", true);
   q.send();
 }
 
-function receive() {
+function receiveBoards() {
   if (this.readyState != 4) return;
   var list = JSON.parse(this.responseText);
   var html = "";
@@ -37,6 +38,35 @@ function receive() {
     html = html + item;
   }
   var list = document.querySelector(".boards-list");
+  list.innerHTML = html;
+}
+
+function fetchPopularThreads() {
+  var q = new XMLHttpRequest();
+  q.onreadystatechange = receivePop;
+  q.open("GET", "/popularthreads", true);
+  q.send();
+}
+
+function receivePop() {
+  if(this.readyState != 4) return;
+  var list = JSON.parse(this.responseText);
+  var html = '<div class="box-title"><div class="left-column"><p>Top Discussions</p></div><div class="right-column"><p>Posts</p></div></div>';
+  var i;
+  var max = 8;
+  if(list.length < 8) max = list.length;
+  for(i = 0; i < max; i++) {
+    var count = list[i].c;
+    var item = '<div class="top-item"><div class="left-column"><p><a href="thread.html?id='
+               + list[i].tId
+               + '"><strong>'
+               + list[i].name
+               + '</strong></a></p></div><div class="right-column"><p>'
+               + count.toString()
+               + '</p></div></div>';
+     html = html + item;
+  }
+  var list = document.querySelector(".top-discussions");
   list.innerHTML = html;
 }
 
