@@ -24,6 +24,8 @@ var verbose = true;
 
 var http = require("http");
 var fs = require("fs");
+var crypto = require("crypto");
+
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned;
 
@@ -72,6 +74,8 @@ function checkSite() {
 // Serve a request by delivering a file.
 function handle(request, response) {
     var url = request.url.toLowerCase();
+    var cookie = request.headers["Cookie"];
+    checkCookie(cookie, response);
     console.log("url=", url);
     if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
@@ -87,6 +91,21 @@ function handle(request, response) {
     var file = "./public" + url;
     fs.readFile(file, ready);
     function ready(err, content) { deliver(response, type, err, content); }
+}
+
+function checkCookie(cookie, response) {
+  var hasSession = false;
+
+  if(hasSession == true) {
+    session = name + "=" + value;
+    response.addHeader("Set-Cookie", session);
+  }
+
+  if(hasSession == false) {
+    var session = crypto.randomBytes(16).toString('hex');
+    insertSession.all(session);
+    response["set-cookie", "session"] = session;
+  }
 }
 
 // Forbid any resources which shouldn't be delivered to the browser.
@@ -221,7 +240,6 @@ function prepare(text, data, response) {
 }
 
 function getBoardList(response) {
-  var ps = db.prepare("select * from boards");
   selectAllBoards.all(ready);
   function ready(err, list) { deliverList(list, response); }
 }
@@ -248,12 +266,6 @@ function getPostList(url, response) {
 function deliverList(list, response) {
   var text = JSON.stringify(list);
   deliver(response, types.txt, null, text);
-}
-
-function createNewSession(response) {
-  var session = Math.random().toString();
-  insertSession.all(session, ready);
-  function ready(err, value) { deliver(response, types.txt, null, session); }
 }
 
 // Prepared statements for use in database
