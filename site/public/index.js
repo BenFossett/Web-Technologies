@@ -52,10 +52,9 @@ function receivePop() {
   if(this.readyState != 4) return;
   var list = JSON.parse(this.responseText);
   var html = '<div class="box-title"><div class="left-column"><p>Top Discussions</p></div><div class="right-column"><p>Posts</p></div></div>';
-  var i;
   var max = 8;
   if(list.length < 8) max = list.length;
-  for(i = 0; i < max; i++) {
+  for(var i = 0; i < max; i++) {
     var count = list[i].c;
     var item = '<div class="top-item"><div class="left-column"><p><a href="thread.html?id='
                + list[i].tId

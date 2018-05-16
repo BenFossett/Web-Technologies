@@ -33,6 +33,18 @@ var db = new sql.Database("data.db");
 
 db.serialize(create);
 
+// Prepared statements
+var selectBoardName = db.prepare("select name from boards where bId=?");
+var selectThreadName = db.prepare("select name from threads where tId=?");
+
+var selectAllBoards = db.prepare("select * from boards");
+var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
+var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0");
+var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
+
+var insertSession = db.prepare("insert into sessions (session) values (?)");
+
+
 // Start the http service. Accept only requests from localhost, for security.
 function start() {
     if (! checkSite()) return;
@@ -68,6 +80,7 @@ function handle(request, response) {
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
+    if (url == "/newsession") return createNewSession(response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
     if (type == null) return fail(response, BadType, "File type unsupported");
@@ -183,8 +196,7 @@ function getBoard(url, response) {
 function getBoardData(text, url, response) {
   var parts = url.split("=");
   var bId = parts[1];
-  var ps = db.prepare("select name from boards where bId=?");
-  ps.get(bId, ready);
+  selectBoardName.get(bId, ready);
   function ready(err, obj) { prepare(text, obj, response); }
 }
 
@@ -198,8 +210,7 @@ function getThread(url, response) {
 function getThreadData(text, url, response) {
   var parts = url.split("=");
   var tId = parts[1];
-  var ps = db.prepare("select name from threads where tId=?")
-  ps.get(tId, ready);
+  selectThreadName.get(tId, ready);
   function ready(err, obj) { prepare(text, obj, response); }
 }
 
@@ -211,29 +222,26 @@ function prepare(text, data, response) {
 
 function getBoardList(response) {
   var ps = db.prepare("select * from boards");
-  ps.all(ready);
+  selectAllBoards.all(ready);
   function ready(err, list) { deliverList(list, response); }
 }
 
 function getPopularThreads(response) {
-  var ps = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
-  ps.all(ready);
+  selectPopularThreads.all(ready);
   function ready(err, list) { deliverList(list, response); }
 }
 
 function getThreadList(url, response) {
   var parts = url.split("=");
   var bId = parts[1];
-  var ps = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0");
-  ps.all(bId, ready);
+  selectBoardThreads.all(bId, ready);
   function ready(err, list) { deliverList(list, response); }
 }
 
 function getPostList(url, response) {
   var parts = url.split("=");
   var tId = parts[1];
-  var ps = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
-  ps.all(tId, ready);
+  selectThreadPosts.all(tId, ready);
   function ready(err, list) { deliverList(list, response); }
 }
 
@@ -242,8 +250,13 @@ function deliverList(list, response) {
   deliver(response, types.txt, null, text);
 }
 
-// Prepared statements for use in database
+function createNewSession(response) {
+  var session = Math.random().toString();
+  insertSession.all(session, ready);
+  function ready(err, value) { deliver(response, types.txt, null, session); }
+}
 
+// Prepared statements for use in database
 function create() {
   db.run("drop table if exists users")
   db.run("drop table if exists boards");
@@ -286,7 +299,7 @@ function create() {
   db.run("insert into posts values (9, 9, 1, 'i dont no how please help me', datetime('now'))");
   db.run("insert into posts values (10, 10, 1, 'should they???', datetime('now'))");
 
-  db.run("create table sessions (sId int, username text, key int, expiry, primary key (sId))");
+  db.run("create table sessions (sId int, session text, username text, primary key (sId))");
 }
 
 start();
