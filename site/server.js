@@ -74,8 +74,7 @@ function checkSite() {
 // Serve a request by delivering a file.
 function handle(request, response) {
     var url = request.url.toLowerCase();
-    var cookie = request.headers["Cookie"];
-    checkCookie(cookie, response);
+    checkCookie(request, response);
     console.log("url=", url);
     if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
@@ -93,19 +92,29 @@ function handle(request, response) {
     function ready(err, content) { deliver(response, type, err, content); }
 }
 
-function checkCookie(cookie, response) {
-  var hasSession = false;
+function checkCookie(request, response) {
+  var hasSession;
+  var cookie = request.headers["cookie"];
 
-  if(hasSession == true) {
-    session = name + "=" + value;
-    response.addHeader("Set-Cookie", session);
+  if(cookie == undefined) {
+    hasSession = false;
+  }
+  else {
+    var name = cookie.split("=")[0];
+    var value = cookie.split("=")[1];
+    if(name=="session") {
+      hasSession = true;
+    }
   }
 
-  if(hasSession == false) {
-    var session = crypto.randomBytes(16).toString('hex');
-    insertSession.all(session);
-    response["set-cookie", "session"] = session;
-  }
+    if(hasSession == true) {
+      response.setHeader("Set-Cookie", "session="+value);
+    }
+    else {
+      var session = crypto.randomBytes(16).toString('hex');
+      insertSession.all(session);
+      response.setHeader("Set-Cookie", "session="+session);
+    }
 }
 
 // Forbid any resources which shouldn't be delivered to the browser.
