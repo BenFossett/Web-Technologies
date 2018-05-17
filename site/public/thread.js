@@ -3,7 +3,9 @@
 addEventListener('load', start);
 
 function start() {
+  console.log(document.cookie);
   var tId = gettId();
+  document.getElementById("posttid").value = tId;
   fetchPosts(tId);
 }
 

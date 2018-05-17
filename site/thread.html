@@ -29,9 +29,11 @@
         </div>
       </div>
       <div class="new-post">
-        <form class="text-box">
-          <textarea name="post" rows="4"/>
-          <input type="submit" value="Post"/>
+        <form name="postForm" class="text-box" action="/makepost" method="POST">
+          <textarea name="post" rows="4" id="postcontent"/>
+          <input type="hidden" value="test" id="postuid" name='postuid'/>
+          <input type="hidden" value="test" id="posttid" name='posttid'/>
+          <input type="submit" value="Submit" id="postbutton"/>
         </form>
       </div>
     </div>

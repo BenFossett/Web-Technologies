@@ -25,6 +25,7 @@ var verbose = true;
 var http = require("http");
 var fs = require("fs");
 var crypto = require("crypto");
+var QS = require("querystring");
 
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned;
@@ -45,6 +46,7 @@ var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.c
 var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
 
 var insertSession = db.prepare("insert into sessions (session) values (?)");
+var insertPost = db.prepare("insert into posts (tId, uId, content, creationDate) values (?, ?, ?, datetime('now'))");
 
 
 // Start the http service. Accept only requests from localhost, for security.
@@ -83,6 +85,7 @@ function handle(request, response) {
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
+    if (url.startsWith("/makepost")) return makepost(request, response);
     if (url == "/newsession") return createNewSession(response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
@@ -275,6 +278,32 @@ function getPostList(url, response) {
 function deliverList(list, response) {
   var text = JSON.stringify(list);
   deliver(response, types.txt, null, text);
+}
+
+function makepost(request, response) {
+  request.on('data', add);
+  request.on('end', end);
+  var body = "";
+
+  function add(chunk) {
+    body = body + chunk.toString();
+  }
+  function end() {
+    var parts = QS.parse(body);//body.split("&");
+    var content = parts.post.toString();
+    var uId = parts.postuid;
+    var tId = parts.posttid;
+    insertPost.all(tId, 1, content, ready);
+    //insertPost.all(tId, uId, content, ready);
+    function ready(err) { reply(response, tId) }
+  }
+}
+
+// Send a reply.
+function reply(response, tId) {
+  var redir = { Location: "/thread.html?id=" + tId };
+  response.writeHead(301, redir);
+  response.end();
 }
 
 // Prepared statements for use in database
