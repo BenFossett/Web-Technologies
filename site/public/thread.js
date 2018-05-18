@@ -4,11 +4,20 @@ addEventListener('load', start);
 
 function start() {
   var cookies = document.cookie;
-  var uId = cookies.split(";")[1].split("=")[1];
+  var uId = cookies.split("; ")[0].split("=")[1];
   var tId = gettId();
-  document.getElementById("posttid").value = tId;
-  document.getElementById("postuid").value = uId;
+  if(uId != null) {
+    makePostForm(tId, uId);
+    document.getElementById("posttid").value = tId;
+    document.getElementById("postuid").value = uId;
+  }
   fetchPosts(tId);
+}
+
+function makePostForm(tId, uId) {
+  var form = document.querySelector(".new-post");
+  var content = '<form name="postForm" class="text-box" action="/makepost" method="POST"><textarea name="post" rows="4" id="postcontent"/><input type="hidden" id="postuid" name="postuid"/><input type="hidden" id="posttid" name="posttid"/><input type="submit" value="Submit" id="postbutton"/></form>'
+  form.innerHTML = content;
 }
 
 function gettId() {

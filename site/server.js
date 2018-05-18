@@ -106,7 +106,6 @@ function getLog_In(response){
 function checkCookie(request, response) {
   var hasSession;
   var cookies = request.headers["cookie"];
-  var cookieArray = cookies.split(";");
   var session;
   var uId = 2
 
@@ -114,6 +113,7 @@ function checkCookie(request, response) {
     hasSession = false;
   }
   else {
+    var cookieArray = cookies.split("; ");
     for(var i=0; i<cookieArray.length; i++) {
       var name = cookieArray[i].split("=")[0];
       var value = cookieArray[i].split("=")[1];
@@ -128,14 +128,12 @@ function checkCookie(request, response) {
   }
 
     if(hasSession == true) {
-      response.setHeader("Set-Cookie", "session="+session);
-      response.setHeader("Set-Cookie", "uId="+uId);
+      response.setHeader("Set-Cookie", "session="+session+";uId="+uId);
     }
     else {
       session = crypto.randomBytes(16).toString('hex');
       insertSession.all(session);
-      response.setHeader("Set-Cookie", "session="+session);
-      response.setHeader("Set-Cookie", "uId="+uId);
+      response.setHeader("Set-Cookie", "session="+session+";uId="+uId);
     }
 }
 
