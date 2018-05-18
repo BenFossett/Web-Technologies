@@ -268,7 +268,7 @@ function getThreadData(text, url, response) {
 
 function prepare(text, data, response) {
   var parts = text.split("$");
-  var page = parts[0] + data.name + parts[1] + data.name + parts[2];
+  var page = parts[0] + "The Source - " + data.name + parts[1] + data.name + parts[2];
   deliver(response, types.html, null, page);
 }
 
