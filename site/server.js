@@ -85,7 +85,7 @@ function handle(request, response) {
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
-    if (url.startsWith("/makepost")) return makepost(request, response);
+    if (url.startsWith("/makepost")) return makePost(request, response);
     if (url == "/newsession") return createNewSession(response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
@@ -280,7 +280,7 @@ function deliverList(list, response) {
   deliver(response, types.txt, null, text);
 }
 
-function makepost(request, response) {
+function makePost(request, response) {
   request.on('data', add);
   request.on('end', end);
   var body = "";
@@ -314,18 +314,18 @@ function create() {
   db.run("drop table if exists posts");
   db.run("drop table if exists sessions");
 
-  db.run("create table users (uId int, name text, email text, password text, avatar text)");
+  db.run("create table users (uId integer primary key autoincrement, name text, email text, password text, avatar text)");
   db.run("insert into users values (1, 'PoliticsMan', 'name1@example.com', 'badpassword', 'avi1.svg')");
   db.run("insert into users values (2, 'WebsiteGuy', 'name2@example.com', 'badpassword', 'avi2.svg')");
 
-  db.run("create table boards (bId int, name text, description text, primary key (bId))");
+  db.run("create table boards (bId integer primary key autoincrement, name text, description text)");
   db.run("insert into boards values (1, 'Forum News and Announcements', 'Information about the forum is found here')");
   db.run("insert into boards values (2, 'U.S. Politics', 'Political discussion regarding the United States')");
   db.run("insert into boards values (3, 'E.U. Politics', 'Political discussion regarding the European Union')");
   db.run("insert into boards values (4, 'Off Topic', 'Non-Political Discussion')");
   db.run("insert into boards values (5, 'Support', 'Feedback, bugs, complaints go here')");
 
-  db.run("create table threads (tId int, bId int, name text, creationDate datetime, primary key(tId), foreign key (bId) references boards (bId))");
+  db.run("create table threads (tId integer primary key autoincrement, bId int, name text, creationDate datetime, foreign key (bId) references boards (bId))");
   db.run("insert into threads values (1, 1, 'Forum Rules and Guidelines', datetime('now'))");
   db.run("insert into threads values (2, 1, 'Introductions', datetime('now'))");
   db.run("insert into threads values (3, 2, 'Gun Control Debate Thread', datetime('now'))");
@@ -337,7 +337,7 @@ function create() {
   db.run("insert into threads values (9, 5, 'how do i make a post?', datetime('now'))");
   db.run("insert into threads values (10, 2, 'Should the U.S. have universal healthcare?', datetime('now'))");
 
-  db.run("create table posts (pId int, tId int, uId int, content text, creationDate datetime, primary key(pId), foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
+  db.run("create table posts (pId integer primary key autoincrement, tId int, uId int, content text, creationDate datetime, foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
   db.run("insert into posts values (1, 1, 1, 'rules', datetime('now'))");
   db.run("insert into posts values (2, 2, 2, 'hello i am user', datetime('now'))");
   db.run("insert into posts values (3, 3, 1, 'guns r bad', datetime('now'))");
@@ -349,7 +349,7 @@ function create() {
   db.run("insert into posts values (9, 9, 1, 'i dont no how please help me', datetime('now'))");
   db.run("insert into posts values (10, 10, 1, 'should they???', datetime('now'))");
 
-  db.run("create table sessions (sId int, session text, username text, primary key (sId))");
+  db.run("create table sessions (sId integer primary key autoincrement, uId int, session text, foreign key (uId) references users (uId))");
 }
 
 start();
