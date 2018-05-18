@@ -1,0 +1,13 @@
+.new-post {
+  align-self: right;
+}
+
+.text-box textarea {
+  width: 80%;
+  margin-top: 25px;
+  resize: vertical;
+}
+
+.text-box input {
+  display: block;
+}
