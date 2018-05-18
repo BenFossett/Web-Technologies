@@ -19,7 +19,12 @@
         </div>
       </div>
       <div class="new-post">
-        <h3>To make a post, please login</h3>
+        <form name="postForm" class="text-box" action="/makepost" method="POST">
+          <textarea name="post" rows="4" id="postcontent"/>
+          <input type="hidden" id="postuid" name="postuid"/>
+          <input type="hidden" id="posttid" name="posttid"/>
+          <input type="submit" value="Submit" id="postbutton"/>
+        </form>
       </div>
     </div>
   </body>

@@ -4,20 +4,36 @@ addEventListener('load', start);
 
 function start() {
   var cookies = document.cookie;
-  var uId = cookies.split("; ")[0].split("=")[1];
+  var cookieArray = cookies.split("; ");
+  getuId();
+  var uId = document.getElementById("postuid").value;
   var tId = gettId();
-  if(uId != null) {
-    makePostForm(tId, uId);
-    document.getElementById("posttid").value = tId;
-    document.getElementById("postuid").value = uId;
+  document.getElementById("posttid").value = tId;
+
+  if(uId == null) {
+    removePostForm(tId, uId);
   }
   fetchPosts(tId);
 }
 
-function makePostForm(tId, uId) {
+function removePostForm(tId, uId) {
   var form = document.querySelector(".new-post");
-  var content = '<form name="postForm" class="text-box" action="/makepost" method="POST"><textarea name="post" rows="4" id="postcontent"/><input type="hidden" id="postuid" name="postuid"/><input type="hidden" id="posttid" name="posttid"/><input type="submit" value="Submit" id="postbutton"/></form>'
+  var content = "<h3>Please log in to make a post</h3>";
   form.innerHTML = content;
+}
+
+function getuId() {
+  var q = new XMLHttpRequest();
+  q.onreadystatechange = receiveUser;
+  q.open("GET", "/getcurrentuser", true);
+  q.send();
+}
+
+function receiveUser() {
+  if (this.readyState != 4) return;
+  var user = JSON.parse(this.responseText);
+  var uId = user.uId;
+  document.getElementById("postuid").value = uId;
 }
 
 function gettId() {
