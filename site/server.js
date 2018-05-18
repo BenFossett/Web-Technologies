@@ -42,10 +42,10 @@ var selectThreadName = db.prepare("select name from threads where tId=?");
 
 var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
-var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0");
+var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
 var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
 
-var insertSession = db.prepare("insert into sessions (session) values (?)");
+var insertSession = db.prepare("insert into sessions (session, uId) values (?, 2)");
 var insertPost = db.prepare("insert into posts (tId, uId, content, creationDate) values (?, ?, ?, datetime('now'))");
 
 
@@ -105,25 +105,37 @@ function getLog_In(response){
 
 function checkCookie(request, response) {
   var hasSession;
-  var cookie = request.headers["cookie"];
-  if(cookie == undefined) {
+  var cookies = request.headers["cookie"];
+  var cookieArray = cookies.split(";");
+  var session;
+  var uId = 2
+
+  if(cookies == undefined) {
     hasSession = false;
   }
   else {
-    var name = cookie.split("=")[0];
-    var value = cookie.split("=")[1];
-    if(name=="session") {
-      hasSession = true;
+    for(var i=0; i<cookieArray.length; i++) {
+      var name = cookieArray[i].split("=")[0];
+      var value = cookieArray[i].split("=")[1];
+      if(name=="session") {
+        hasSession = true;
+        session = value;
+      }
+      if(name=="uId") {
+        uId = value;
+      }
     }
   }
 
     if(hasSession == true) {
-      response.setHeader("Set-Cookie", "session="+value);
+      response.setHeader("Set-Cookie", "session="+session);
+      response.setHeader("Set-Cookie", "uId="+uId);
     }
     else {
-      var session = crypto.randomBytes(16).toString('hex');
+      session = crypto.randomBytes(16).toString('hex');
       insertSession.all(session);
       response.setHeader("Set-Cookie", "session="+session);
+      response.setHeader("Set-Cookie", "uId="+uId);
     }
 }
 
@@ -302,9 +314,10 @@ function makePost(request, response) {
     var content = parts.post.toString();
     var uId = parts.postuid;
     var tId = parts.posttid;
-    insertPost.all(tId, 1, content, ready);
+
+    insertPost.all(tId, uId, content, ready);
     //insertPost.all(tId, uId, content, ready);
-    function ready(err) { reply(response, tId) }
+    function ready(err) { reply(response, tId); }
   }
 }
 

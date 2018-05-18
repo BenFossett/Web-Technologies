@@ -3,9 +3,11 @@
 addEventListener('load', start);
 
 function start() {
-  console.log(document.cookie);
+  var cookies = document.cookie;
+  var uId = cookies.split(";")[1].split("=")[1];
   var tId = gettId();
   document.getElementById("posttid").value = tId;
+  document.getElementById("postuid").value = uId;
   fetchPosts(tId);
 }
 
