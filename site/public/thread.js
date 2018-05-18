@@ -27,13 +27,16 @@ function receive() {
   var html = "";
   var i;
   for(i = 0; i< list.length; i++) {
-    var item = '<div class="post-item"><div class="box-title">Posted: '
-               + list[i].creationDate
-               +'</div><div class="post-content"><div class="user-column"><h4>'
-               + list[i].name
-               + '</h4><img src="cow.jpg"/></div><div class="text-column"><p>'
-               + list[i].content
-               + '</p></div></div></div>';
+    var item =
+    '<div class="post-item">\
+      <div class="box-title">Posted: '+ list[i].creationDate +'</div>\
+      <div class="post-content">\
+        <div class="user-column">\
+          <h4>'+ list[i].name+ '</h4>\
+          <img src="cow.jpg"/>\
+        </div>\
+        <div class="text-column">\
+          <p>' + list[i].content + '</p></div></div></div>';
     html = html + item;
   }
   var list = document.querySelector(".post-list");

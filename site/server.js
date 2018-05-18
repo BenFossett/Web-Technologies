@@ -77,6 +77,7 @@ function handle(request, response) {
     var cookie = request.headers["Cookie"];
     checkCookie(cookie, response);
     console.log("url=", url);
+    if (url.startsWith("/log_in.html")) return getLog_In(response);
     if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
     if (url == "/popularthreads") return getPopularThreads(response);
@@ -91,6 +92,13 @@ function handle(request, response) {
     var file = "./public" + url;
     fs.readFile(file, ready);
     function ready(err, content) { deliver(response, type, err, content); }
+}
+
+function getLog_In(response){
+  fs.readFile("./log_in.html", "utf8", ready);
+  function ready(err, content) {
+    deliver(response, types.html, null, content);
+  }
 }
 
 function checkCookie(cookie, response) {
@@ -212,6 +220,7 @@ function getBoard(url, response) {
   }
 }
 
+// only gets the title from db and prepare adds it in
 function getBoardData(text, url, response) {
   var parts = url.split("=");
   var bId = parts[1];
@@ -226,6 +235,7 @@ function getThread(url, response) {
   }
 }
 
+// gets the title from the db and prepare adds it in
 function getThreadData(text, url, response) {
   var parts = url.split("=");
   var tId = parts[1];
