@@ -47,9 +47,9 @@ var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
 var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
-var selectCurrentUser = db.prepare("select users.uId, users.name, users.avatar from users inner join sessions on users.uId = sessions.uId where sessions.session=?");
+var selectCurrentUser = db.prepare("select users.uId, users.name, users.avatar from users inner join sessions on users.uId = sessions.uId where session=?");
 
-var insertSession = db.prepare("insert into sessions (session, uId) values (?, 2)");
+var insertSession = db.prepare("insert into sessions (session) values (?)");
 var insertThread = db.prepare("insert into threads (bId, name, creationDate) values (?, ?, dateTime('now'))");
 var insertPost = db.prepare("insert into posts (tId, uId, content, creationDate) values (?, ?, ?, datetime('now'))");
 
@@ -303,14 +303,19 @@ function getPostList(url, response) {
 }
 
 function deliverList(list, response) {
-  var text = JSON.stringify(list);
+  if(list != undefined) {
+    var text = JSON.stringify(list);
+  }
+  else {
+    var text = "data not found"
+  }
   deliver(response, types.txt, null, text);
 }
 
 function getCurrentUser(request, response) {
   var cookies = request.headers["cookie"];
   var session = getCookie(cookies);
-  selectCurrentUser.each(session, ready);
+  selectCurrentUser.get(session, ready);
   function ready(err, user) { deliverList(user, response); }
 }
 
@@ -350,18 +355,19 @@ function Log_In(request, response) {
     body = body + chunk.toString();
   }
   function end() {
-    var parts = QS.parse(body);//body.split("&");
+    var parts = QS.parse(body);
     var user = parts.user;
     var password = parts.passwd;
     var session = parts.session;
     selectUser.get(user, password, Log_In_status);
     function Log_In_status(err, user){
-      console.log(user);
       if (user != null){
-        updateSession.run(session, user['uId']);
-        var redir = { Location: "/index.html"};
-        response.writeHead(301, redir);
-        response.end();
+        updateSession.run(user.uId, session, ready);
+        function ready() {
+          var redir = { Location: "/index.html"};
+          response.writeHead(301, redir);
+          response.end();
+        }
       }
       else {
         var redir = { Location: "/log_in.html"};
@@ -414,7 +420,7 @@ function create() {
 
   db.run("create table boards (bId integer primary key autoincrement, name text, description text)");
   db.run("insert into boards values (1, 'Forum News and Announcements', 'Information about the forum is found here')");
-  db.run("insert into boards values (2, 'U.S. Politics', 'Political discussion regarding the United States')");
+  db.run("insert into boards values (2, 'Global Politics', 'Political discussion about global news')");
   db.run("insert into boards values (3, 'E.U. Politics', 'Political discussion regarding the European Union')");
   db.run("insert into boards values (4, 'Off Topic', 'Non-Political Discussion')");
   db.run("insert into boards values (5, 'Support', 'Feedback, bugs, complaints go here')");
@@ -422,7 +428,7 @@ function create() {
   db.run("create table threads (tId integer primary key autoincrement, bId int, name text, creationDate datetime, foreign key (bId) references boards (bId))");
   db.run("insert into threads values (1, 1, 'Forum Rules and Guidelines', datetime('now'))");
   db.run("insert into threads values (2, 1, 'Introductions', datetime('now'))");
-  db.run("insert into threads values (3, 2, 'Gun Control Debate Thread', datetime('now'))");
+  db.run("insert into threads values (3, 2, 'Trump and North Korea', datetime('now'))");
   db.run("insert into threads values (4, 3, 'Brexit Debate Thread', datetime('now'))");
   db.run("insert into threads values (5, 4, 'Funniest Memes', datetime('now'))");
   db.run("insert into threads values (6, 5, 'Planned Bugfixes', datetime('now'))");
@@ -434,7 +440,7 @@ function create() {
   db.run("create table posts (pId integer primary key autoincrement, tId int, uId int, content text, creationDate datetime, foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
   db.run("insert into posts values (1, 1, 1, 'rules', datetime('now'))");
   db.run("insert into posts values (2, 2, 2, 'hello i am user', datetime('now'))");
-  db.run("insert into posts values (3, 3, 1, 'guns r bad', datetime('now'))");
+  db.run("insert into posts values (3, 3, 1, 'What does everyone think about...', datetime('now'))");
   db.run("insert into posts values (4, 4, 1, 'breakfast', datetime('now'))");
   db.run("insert into posts values (5, 5, 2, 'pepe', datetime('now'))");
   db.run("insert into posts values (6, 6, 2, 'get this damn site finished by monday', datetime('now'))");
