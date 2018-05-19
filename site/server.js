@@ -42,14 +42,14 @@ var selectThreadName = db.prepare("select name from threads where tId=?");
 
 var selectUser = db.prepare("select * from users where name=? and password=?");
 var updateSession = db.prepare("update sessions set uId=? where session=?");
-
+var selectSession = db.prepare("select * from sessions");
 var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
 var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
 var selectCurrentUser = db.prepare("select users.uId, users.name, users.avatar from users inner join sessions on users.uId = sessions.uId where sessions.session=?");
 
-var insertSession = db.prepare("insert into sessions (session, uId) values (?, 2)");
+var insertSession = db.prepare("insert into sessions (session) values (?)");
 var insertThread = db.prepare("insert into threads (bId, name, creationDate) values (?, ?, dateTime('now'))");
 var insertPost = db.prepare("insert into posts (tId, uId, content, creationDate) values (?, ?, ?, datetime('now'))");
 
@@ -130,19 +130,24 @@ function checkCookie(request, response) {
   else {
     session = crypto.randomBytes(16).toString('hex');
     insertSession.all(session);
+    selectSession.all(ready2);
+    function ready2(err, item){console.log("the cookies are " +item);}
     response.setHeader("Set-Cookie", "session="+session);
   }
 }
 
 function getCookie(cookies) {
   var cookieArray = cookies.split("; ");
+  var name;
+  var value;
   for(var i=0; i<cookieArray.length; i++) {
-    var name = cookieArray[i].split("=")[0];
-    var value = cookieArray[i].split("=")[1];
+    name = cookieArray[i].split("=")[0];
+    value = cookieArray[i].split("=")[1];
     if(name=="session") {
       return value;
     }
   }
+  return undefined;
 }
 
 // Forbid any resources which shouldn't be delivered to the browser.
@@ -356,12 +361,18 @@ function Log_In(request, response) {
     var session = parts.session;
     selectUser.get(user, password, Log_In_status);
     function Log_In_status(err, user){
-      console.log(user);
+      //console.log(user);
       if (user != null){
-        updateSession.run(session, user['uId']);
-        var redir = { Location: "/index.html"};
-        response.writeHead(301, redir);
-        response.end();
+        updateSession.run(user.uId, session, ready);
+        function ready(err){
+          selectSession.all(ready2);
+          //selectCurrentUser.each(session, ready2);
+          function ready2 (err, session){console.log("session is" + session);
+            var redir = { Location: "/index.html"};
+            response.writeHead(301, redir);
+            response.end();
+          }
+        }
       }
       else {
         var redir = { Location: "/log_in.html"};

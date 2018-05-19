@@ -4,7 +4,9 @@ addEventListener('load', AddHeader);
 
 
 function AddHeader(){
-  console.log("print here");
+  var logged_in = false;
+  var uId, username, avatar;
+  uId,username, avatar = getuId();
   var header = document.querySelector("header");
   if (header.className == "log_in"){
     header.innerHTML = `
@@ -27,4 +29,20 @@ function AddHeader(){
     </div>
     `;
   }
+}
+
+function getuId() {
+  var q = new XMLHttpRequest();
+  q.onreadystatechange = receiveUser;
+  q.open("GET", "/getcurrentuser", true);
+  q.send();
+}
+
+function receiveUser() {
+  if (this.readyState != 4) return;
+  var user = JSON.parse(this.responseText);
+  var uId = user.uId;
+  var username = user.name;
+  var avatar = user.avatar;
+  return (uId, username, avatar);
 }
