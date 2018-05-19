@@ -3,8 +3,49 @@
 addEventListener('load', start);
 
 function start() {
+  var modal = document.getElementById("threadModal");
+  var btn = document.getElementById("createThread");
+  var span = document.querySelector(".close");
+
+  btn.addEventListener('click', displayModal.bind(event, modal));
+  span.addEventListener('click', closeModal.bind(event, modal));
+  window.addEventListener('click', closeModalWindow.bind(event, modal));
+
+  var cookies = document.cookie;
+  var cookieArray = cookies.split("; ");
+  getuId();
+  var uId = document.getElementById("threaduid").value;
   var bId = getbId();
+  document.getElementById("threadbid").value = bId;
   fetchThreads(bId);
+}
+
+function getuId() {
+  var q = new XMLHttpRequest();
+  q.onreadystatechange = receiveUser;
+  q.open("GET", "/getcurrentuser", true);
+  q.send();
+}
+
+function receiveUser() {
+  if (this.readyState != 4) return;
+  var user = JSON.parse(this.responseText);
+  var uId = user.uId;
+  document.getElementById("threaduid").value = uId;
+}
+
+function displayModal(modal) {
+  modal.style.display = "block";
+}
+
+function closeModal(modal) {
+  modal.style.display = "none";
+}
+
+function closeModalWindow(modal) {
+  if(event.target == modal) {
+    modal.style.display = "none";
+  }
 }
 
 function getbId() {

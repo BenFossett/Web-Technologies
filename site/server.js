@@ -47,6 +47,7 @@ var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, us
 var selectCurrentUser = db.prepare("select users.uId, users.name, users.avatar from users inner join sessions on users.uId = sessions.uId where sessions.session=?");
 
 var insertSession = db.prepare("insert into sessions (session, uId) values (?, 2)");
+var insertThread = db.prepare("insert into threads (bId, name, creationDate) values (?, ?, dateTime('now'))");
 var insertPost = db.prepare("insert into posts (tId, uId, content, creationDate) values (?, ?, ?, datetime('now'))");
 
 
@@ -87,7 +88,8 @@ function handle(request, response) {
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
-    if (url.startsWith("/makepost")) return makePost(request, response);
+    if (url == "/makepost") return makePost(request, response);
+    if (url == "/makethread") return makeThread(request, response);
     if (url == "/getcurrentuser") return getCurrentUser(request, response);
     if (url == "/newsession") return createNewSession(response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
@@ -317,13 +319,12 @@ function makePost(request, response) {
     body = body + chunk.toString();
   }
   function end() {
-    console.log(body);
-    var parts = QS.parse(body);//body.split("&");
-    var content = parts.post.toString();
+    var parts = QS.parse(body);
+    var content = parts.post
     var uId = parts.postuid;
     var tId = parts.posttid;
 
-    insertPost.all(tId, uId, content, ready);
+    insertPost.run(tId, uId, content, ready);
     //insertPost.all(tId, uId, content, ready);
     function ready(err) { reply(response, tId); }
   }
@@ -334,6 +335,34 @@ function reply(response, tId) {
   var redir = { Location: "/thread.html?id=" + tId };
   response.writeHead(301, redir);
   response.end();
+}
+
+function makeThread(request, response) {
+  request.on('data', add);
+  request.on('end', end);
+  var body = "";
+
+  function add(chunk) {
+    body = body + chunk.toString();
+  }
+  function end() {
+    var parts = QS.parse(body);
+    var title = parts.threadtitle;
+    var content = parts.post;
+    var uId = parts.threaduid;
+    var bId = parts.threadbid;
+
+    insertThread.run(bId, title, ready);
+    function ready(err) {
+      var tId = this.lastID;
+      postInThread(response, uId, content, tId);
+    }
+  }
+}
+
+function postInThread(response, uId, content, tId) {
+  insertPost.run(tId, uId, content, ready);
+  function ready(err) { reply(response, tId); }
 }
 
 // Prepared statements for use in database
