@@ -1,27 +1,12 @@
 "use strict"
 
-addEventListener('load', AddHeader);
-
-
-function AddHeader(){
-  getUser();
-}
-
-function getUser() {
-  var q = new XMLHttpRequest();
-  q.onreadystatechange = receiveUser;
-  q.open("GET", "/getcurrentuser", true);
-  q.send();
-}
-
-function receiveUser() {
-  if (this.readyState != 4) return;
-  if(this.responseText != "data not found") {
-    var user = JSON.parse(this.responseText);
-    document.getElementById("username").value = user.name;
-    document.getElementById("useravatar").value = user.avatar;
-    document.getElementById("useremail").value = user.email;
-    makeUserNavbar(user.name, user.avatar);
+function addHeader(){
+  var uId = document.getElementById("useruid").value;
+  console.log("test");
+  if(uId != "") {
+    var username = document.getElementById("username").value;
+    var avatar = document.getElementById("useravatar").value;
+    makeUserNavbar(username, avatar);
   }
   else {
     makeDefaultNavbar();

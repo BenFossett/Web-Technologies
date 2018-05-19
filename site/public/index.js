@@ -11,8 +11,29 @@ function start() {
   }
 
   document.getElementById("Tab1").click();
+  getUser();
   fetchBoards();
   fetchPopularThreads();
+}
+
+function getUser() {
+  var q = new XMLHttpRequest();
+  q.onreadystatechange = receiveUser;
+  q.open("GET", "/getcurrentuser", true);
+  q.send();
+}
+
+function receiveUser() {
+  if (this.readyState != 4) return;
+  if(this.responseText != "data not found") {
+    var user = JSON.parse(this.responseText);
+    document.getElementById("useruid").value = user.uId;
+    console.log(user.uId);
+    document.getElementById("username").value = user.name;
+    document.getElementById("useravatar").value = user.avatar;
+    document.getElementById("useremail").value = user.email;
+  }
+  addHeader();
 }
 
 function fetchBoards() {

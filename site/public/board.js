@@ -13,14 +13,14 @@ function start() {
 
   var cookies = document.cookie;
   var cookieArray = cookies.split("; ");
-  getuId();
-  var uId = document.getElementById("threaduid").value;
+
+  getUser();
   var bId = getbId();
   document.getElementById("threadbid").value = bId;
   fetchThreads(bId);
 }
 
-function getuId() {
+function getUser() {
   var q = new XMLHttpRequest();
   q.onreadystatechange = receiveUser;
   q.open("GET", "/getcurrentuser", true);
@@ -29,9 +29,15 @@ function getuId() {
 
 function receiveUser() {
   if (this.readyState != 4) return;
-  var user = JSON.parse(this.responseText);
-  var uId = user.uId;
-  document.getElementById("threaduid").value = uId;
+  if(this.responseText != "data not found") {
+    var user = JSON.parse(this.responseText);
+    document.getElementById("useruid").value = user.uId;
+    document.getElementById("threaduid").value = user.uId;
+    document.getElementById("username").value = user.name;
+    document.getElementById("useravatar").value = user.avatar;
+    document.getElementById("useremail").value = user.email;
+  }
+  addHeader();
 }
 
 function displayModal(modal) {

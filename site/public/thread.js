@@ -5,24 +5,19 @@ addEventListener('load', start);
 function start() {
   var cookies = document.cookie;
   var cookieArray = cookies.split("; ");
-  getuId();
-  var uId = document.getElementById("postuid").value;
+  getUser();
   var tId = gettId();
   document.getElementById("posttid").value = tId;
-
-  if(uId == null) {
-    removePostForm(tId, uId);
-  }
   fetchPosts(tId);
 }
 
-function removePostForm(tId, uId) {
+function removePostForm() {
   var form = document.querySelector(".new-post");
   var content = "<h3>Please log in to make a post</h3>";
   form.innerHTML = content;
 }
 
-function getuId() {
+function getUser() {
   var q = new XMLHttpRequest();
   q.onreadystatechange = receiveUser;
   q.open("GET", "/getcurrentuser", true);
@@ -31,9 +26,18 @@ function getuId() {
 
 function receiveUser() {
   if (this.readyState != 4) return;
-  var user = JSON.parse(this.responseText);
-  var uId = user.uId;
-  document.getElementById("postuid").value = uId;
+  if(this.responseText != "data not found") {
+    var user = JSON.parse(this.responseText);
+    document.getElementById("useruid").value = user.uId;
+    document.getElementById("postuid").value = user.uId;
+    document.getElementById("username").value = user.name;
+    document.getElementById("useravatar").value = user.avatar;
+    document.getElementById("useremail").value = user.email;
+  }
+  else {
+    removePostForm();
+  }
+  addHeader();
 }
 
 function gettId() {
