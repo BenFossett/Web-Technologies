@@ -42,7 +42,7 @@ var selectThreadName = db.prepare("select name from threads where tId=?");
 
 var selectUser = db.prepare("select * from users where name=? and password=?");
 var updateSession = db.prepare("update sessions set uId=? where session=?");
-
+var selectSession = db.prepare("select * from sessions");
 var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
@@ -130,19 +130,24 @@ function checkCookie(request, response) {
   else {
     session = crypto.randomBytes(16).toString('hex');
     insertSession.all(session);
+    selectSession.all(ready2);
+    function ready2(err, item){console.log("the cookies are " +item);}
     response.setHeader("Set-Cookie", "session="+session);
   }
 }
 
 function getCookie(cookies) {
   var cookieArray = cookies.split("; ");
+  var name;
+  var value;
   for(var i=0; i<cookieArray.length; i++) {
-    var name = cookieArray[i].split("=")[0];
-    var value = cookieArray[i].split("=")[1];
+    name = cookieArray[i].split("=")[0];
+    value = cookieArray[i].split("=")[1];
     if(name=="session") {
       return value;
     }
   }
+  return undefined;
 }
 
 // Forbid any resources which shouldn't be delivered to the browser.
