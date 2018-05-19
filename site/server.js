@@ -40,6 +40,9 @@ db.serialize(create);
 var selectBoardName = db.prepare("select name from boards where bId=?");
 var selectThreadName = db.prepare("select name from threads where tId=?");
 
+var selectUser = db.prepare("select * from users where name=? and password=?");
+var updateSession = db.prepare("update sessions set uId=? where session=?");
+
 var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
@@ -88,6 +91,7 @@ function handle(request, response) {
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
+    if (url == "/log_in") return Log_In(request, response);
     if (url == "/makepost") return makePost(request, response);
     if (url == "/makethread") return makeThread(request, response);
     if (url == "/getcurrentuser") return getCurrentUser(request, response);
@@ -335,6 +339,37 @@ function reply(response, tId) {
   var redir = { Location: "/thread.html?id=" + tId };
   response.writeHead(301, redir);
   response.end();
+}
+
+function Log_In(request, response) {
+  request.on('data', add);
+  request.on('end', end);
+  var body = "";
+
+  function add(chunk) {
+    body = body + chunk.toString();
+  }
+  function end() {
+    var parts = QS.parse(body);//body.split("&");
+    var user = parts.user;
+    var password = parts.passwd;
+    var session = parts.session;
+    selectUser.get(user, password, Log_In_status);
+    function Log_In_status(err, user){
+      console.log(user);
+      if (user != null){
+        updateSession.run(session, user['uId']);
+        var redir = { Location: "/index.html"};
+        response.writeHead(301, redir);
+        response.end();
+      }
+      else {
+        var redir = { Location: "/log_in.html"};
+        response.writeHead(301, redir);
+        response.end();
+      }
+    }
+  }
 }
 
 function makeThread(request, response) {
