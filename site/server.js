@@ -47,8 +47,10 @@ var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
 var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
+var selectCurrentUser = db.prepare("select users.uId, users.name, users.avatar from users inner join sessions on users.uId = sessions.uId where sessions.session=?");
 
 var insertSession = db.prepare("insert into sessions (session, uId) values (?, 2)");
+var insertThread = db.prepare("insert into threads (bId, name, creationDate) values (?, ?, dateTime('now'))");
 var insertPost = db.prepare("insert into posts (tId, uId, content, creationDate) values (?, ?, ?, datetime('now'))");
 
 
@@ -89,8 +91,10 @@ function handle(request, response) {
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
-    if (url.startsWith("/makepost")) return makePost(request, response);
     if (url == "/log_in") return Log_In(request, response);
+    if (url == "/makepost") return makePost(request, response);
+    if (url == "/makethread") return makeThread(request, response);
+    if (url == "/getcurrentuser") return getCurrentUser(request, response);
     if (url == "/newsession") return createNewSession(response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
@@ -109,38 +113,36 @@ function getLog_In(response){
 
 function checkCookie(request, response) {
   var hasSession;
-  var cookies = request.headers["cookie"];
+  var cookies = request.headers['cookie'];
   var session;
-  var uId;
 
   if(cookies == undefined) {
     hasSession = false;
   }
   else {
-    var cookieArray = cookies.split(";");
-    for(var i=0; i<cookieArray.length; i++) {
-      var name = cookieArray[i].split("=")[0];
-      var value = cookieArray[i].split("=")[1];
-      if(name=="session") {
-        hasSession = true;
-        session = value;
-      }
-      if(name=="uId") {
-        uId = value;
-      }
-    }
+    session = getCookie(cookies);
+    if(session != undefined) hasSession = true;
   }
 
-    if(hasSession == true) {
-      response.setHeader("Set-Cookie", "session="+session);
-      if (uId != undefined) response.setHeader("Set-Cookie", "uId="+uId);
+  if(hasSession == true) {
+    response.setHeader("Set-Cookie", "session="+session);
+  }
+  else {
+    session = crypto.randomBytes(16).toString('hex');
+    insertSession.all(session);
+    response.setHeader("Set-Cookie", "session="+session);
+  }
+}
+
+function getCookie(cookies) {
+  var cookieArray = cookies.split("; ");
+  for(var i=0; i<cookieArray.length; i++) {
+    var name = cookieArray[i].split("=")[0];
+    var value = cookieArray[i].split("=")[1];
+    if(name=="session") {
+      return value;
     }
-    else {
-      session = crypto.randomBytes(16).toString('hex');
-      insertSession.all(session);
-      response.setHeader("Set-Cookie", "session="+session);
-      //response.setHeader("Set-Cookie", "uId="+uId);
-    }
+  }
 }
 
 // Forbid any resources which shouldn't be delivered to the browser.
@@ -272,7 +274,7 @@ function getThreadData(text, url, response) {
 
 function prepare(text, data, response) {
   var parts = text.split("$");
-  var page = parts[0] + data.name + parts[1] + data.name + parts[2];
+  var page = parts[0] + "The Source - " + data.name + parts[1] + data.name + parts[2];
   deliver(response, types.html, null, page);
 }
 
@@ -305,6 +307,13 @@ function deliverList(list, response) {
   deliver(response, types.txt, null, text);
 }
 
+function getCurrentUser(request, response) {
+  var cookies = request.headers["cookie"];
+  var session = getCookie(cookies);
+  selectCurrentUser.each(session, ready);
+  function ready(err, user) { deliverList(user, response); }
+}
+
 function makePost(request, response) {
   request.on('data', add);
   request.on('end', end);
@@ -314,12 +323,12 @@ function makePost(request, response) {
     body = body + chunk.toString();
   }
   function end() {
-    var parts = QS.parse(body);//body.split("&");
-    var content = parts.post.toString();
+    var parts = QS.parse(body);
+    var content = parts.post
     var uId = parts.postuid;
     var tId = parts.posttid;
 
-    insertPost.all(tId, uId, content, ready);
+    insertPost.run(tId, uId, content, ready);
     //insertPost.all(tId, uId, content, ready);
     function ready(err) { reply(response, tId); }
   }
@@ -361,6 +370,34 @@ function Log_In(request, response) {
       }
     }
   }
+}
+
+function makeThread(request, response) {
+  request.on('data', add);
+  request.on('end', end);
+  var body = "";
+
+  function add(chunk) {
+    body = body + chunk.toString();
+  }
+  function end() {
+    var parts = QS.parse(body);
+    var title = parts.threadtitle;
+    var content = parts.post;
+    var uId = parts.threaduid;
+    var bId = parts.threadbid;
+
+    insertThread.run(bId, title, ready);
+    function ready(err) {
+      var tId = this.lastID;
+      postInThread(response, uId, content, tId);
+    }
+  }
+}
+
+function postInThread(response, uId, content, tId) {
+  insertPost.run(tId, uId, content, ready);
+  function ready(err) { reply(response, tId); }
 }
 
 // Prepared statements for use in database

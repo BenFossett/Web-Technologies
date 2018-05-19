@@ -4,11 +4,36 @@ addEventListener('load', start);
 
 function start() {
   var cookies = document.cookie;
-  var uId = cookies.split(";")[1].split("=")[1];
+  var cookieArray = cookies.split("; ");
+  getuId();
+  var uId = document.getElementById("postuid").value;
   var tId = gettId();
   document.getElementById("posttid").value = tId;
-  document.getElementById("postuid").value = uId;
+
+  if(uId == null) {
+    removePostForm(tId, uId);
+  }
   fetchPosts(tId);
+}
+
+function removePostForm(tId, uId) {
+  var form = document.querySelector(".new-post");
+  var content = "<h3>Please log in to make a post</h3>";
+  form.innerHTML = content;
+}
+
+function getuId() {
+  var q = new XMLHttpRequest();
+  q.onreadystatechange = receiveUser;
+  q.open("GET", "/getcurrentuser", true);
+  q.send();
+}
+
+function receiveUser() {
+  if (this.readyState != 4) return;
+  var user = JSON.parse(this.responseText);
+  var uId = user.uId;
+  document.getElementById("postuid").value = uId;
 }
 
 function gettId() {

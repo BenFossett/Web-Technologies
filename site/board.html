@@ -23,6 +23,26 @@
         <div class="thread-list">
         </div>
       </div>
+      <button id="createThread">Create New Thread</button>
+      <div id="threadModal" class="modal">
+        <div class="modalContent">
+          <div class="modalHeader">
+            <h2>Creating Thread</h2>
+            <span class="close">X</span>
+          </div>
+          <div class="modalBody">
+            <form class="text-box" action="/makethread" method="POST">
+              <h3>Thread Title</h3>
+              <input type="text" id="titlebox" name="threadtitle"/>
+              <h3>Thread Body</h3>
+              <textarea name="post" rows="4" id="threadcontent"></textarea>
+              <input type="hidden" id="threaduid" name="threaduid"/>
+              <input type="hidden" id="threadbid" name="threadbid"/>
+              <input type="submit" value="Submit" id="postbutton"/>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
