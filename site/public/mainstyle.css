@@ -68,6 +68,20 @@ header {
   font-size: 120%;;
 }
 
+#top-navbar .avatar {
+  height: 45px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: auto;
+  padding-bottom: auto;
+  height: 45px;
+}
+
+#top-navbar img {
+  width: 45px;
+  height: 45px;
+}
+
 .main {
   display: block;
   min-width: 600px;
@@ -100,8 +114,7 @@ header {
   display: none;
   text-align: center;
   width: 100%;
-  padding-top: 10%;
-  padding-bottom: 10%;
+  padding-top: 25%;
 }
 
 .tabcontent img {
@@ -109,6 +122,23 @@ header {
   max-width: 100%;
   width: auto;
   height: auto;
+}
+
+.tabcontent h3 {
+  text-align: right;
+  color: white;
+}
+
+.tabcontent p {
+  text-align: right;
+  color: white;
+}
+
+#Item2 {
+  background-image: url("images/tabheader1.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .table-container {
