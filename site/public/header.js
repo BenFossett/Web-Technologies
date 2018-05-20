@@ -39,13 +39,18 @@ function makeDefaultNavbar() {
 }
 
 function makeUserNavbar(username, avatar) {
+  console.log(avatar);
   var header = document.querySelector("header");
   header.innerHTML = `
   <div id="logo">
     <a href="index.html">LOGO</a>
   </div>
   <div id="top-navbar">
-    <a href="#" class="avatar"><img src="cow.jpg"/></a>
+    <a href="#" class="avatar">`
+    + '<img src="images/'
+    + avatar
+    + '"/>'
+    + `</a>
     <a href="#" class="top-button">`
     + username
     + `</a>
