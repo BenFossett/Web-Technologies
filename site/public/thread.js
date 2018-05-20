@@ -69,7 +69,7 @@ function receive() {
       <div class="post-content">\
         <div class="user-column">\
           <h4>'+ list[i].name+ '</h4>\
-          <img src="cow.jpg"/>\
+          <img src="images/' + list[i].avatar + '"/>\
         </div>\
         <div class="text-column">\
           <p>' + list[i].content + '</p></div></div></div>';

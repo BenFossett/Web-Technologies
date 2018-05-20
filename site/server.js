@@ -46,7 +46,7 @@ var selectSession = db.prepare("select * from sessions");
 var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
-var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name from posts inner join users on posts.uId = users.uId where tId=?");
+var selectThreadPosts = db.prepare("select posts.content, posts.creationDate, users.name, users.avatar from posts inner join users on posts.uId = users.uId where tId=?");
 var selectCurrentUser = db.prepare("select users.uId, users.name, users.avatar from users inner join sessions on users.uId = sessions.uId where session=?");
 
 var insertSession = db.prepare("insert into sessions (session) values (?)");
