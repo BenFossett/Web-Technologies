@@ -42,7 +42,7 @@ var selectThreadName = db.prepare("select name from threads where tId=?");
 
 var selectUser = db.prepare("select * from users where name=? and password=?");
 var updateSession = db.prepare("update sessions set uId=? where session=?");
-var selectSession = db.prepare("select * from sessions");
+var selectSession = db.prepare("select * from sessions where session=?");
 var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, count(*) as c from threads inner join posts on threads.tId = posts.tId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
@@ -81,8 +81,8 @@ function checkSite() {
 // Serve a request by delivering a file.
 function handle(request, response) {
     var url = request.url.toLowerCase();
-    checkCookie(request, response);
     console.log("url=", url);
+    checkCookie(request, response);
     if (url.startsWith("/log_in.html")) return getLog_In(response);
     if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
@@ -125,13 +125,22 @@ function checkCookie(request, response) {
   }
 
   if(hasSession == true) {
-    response.setHeader("Set-Cookie", "session="+session);
+    selectSession.get(session, ready2);
+    function ready2(err, item){
+      console.log("the cookies are " + JSON.stringify(item));
+      if (item != undefined) response.setHeader("Set-Cookie", "session="+session);
+      else {
+        session = crypto.randomBytes(16).toString('hex');
+        insertSession.all(session);
+        console.log("11111111111111111");
+        response.setHeader("Set-Cookie", "session="+session);
+        console.log("222222222222222");
+      }
+    }
   }
   else {
     session = crypto.randomBytes(16).toString('hex');
     insertSession.all(session);
-    selectSession.all(ready2);
-    function ready2(err, item){console.log("the cookies are " +item);}
     response.setHeader("Set-Cookie", "session="+session);
   }
 }
@@ -176,6 +185,7 @@ function findType(url) {
 function deliver(response, type, err, content) {
     if (err) return fail(response, NotFound, "File not found");
     var typeHeader = { "Content-Type": type };
+    console.log("right before writing head");
     response.writeHead(OK, typeHeader);
     response.write(content);
     response.end();
