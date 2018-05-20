@@ -3,18 +3,21 @@
 addEventListener('load', start);
 
 function start() {
+  var modal = document.getElementById("threadModal");
+  var btn = document.getElementById("createThread");
+  var span = document.querySelector(".close");
+
+  btn.addEventListener('click', displayModal.bind(event, modal));
+  span.addEventListener('click', closeModal.bind(event, modal));
+  window.addEventListener('click', closeModalWindow.bind(event, modal));
+
+
   var cookies = document.cookie;
   var cookieArray = cookies.split("; ");
   getUser();
   var tId = gettId();
   document.getElementById("posttid").value = tId;
   fetchPosts(tId);
-}
-
-function removePostForm() {
-  var form = document.querySelector(".new-post");
-  var content = "<h3>Please log in to make a post</h3>";
-  form.innerHTML = content;
 }
 
 function getUser() {
@@ -35,7 +38,7 @@ function receiveUser() {
     document.getElementById("useremail").value = user.email;
   }
   else {
-    removePostForm();
+    removePostingTools();
   }
   addHeader();
 }
@@ -43,8 +46,8 @@ function receiveUser() {
 function gettId() {
   var url = window.location.href;
   var parts = url.split("=");
-  var bId = parts[1];
-  return bId
+  var tId = parts[1];
+  return tId
 }
 
 function fetchPosts(tId) {

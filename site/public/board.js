@@ -37,21 +37,10 @@ function receiveUser() {
     document.getElementById("useravatar").value = user.avatar;
     document.getElementById("useremail").value = user.email;
   }
-  addHeader();
-}
-
-function displayModal(modal) {
-  modal.style.display = "block";
-}
-
-function closeModal(modal) {
-  modal.style.display = "none";
-}
-
-function closeModalWindow(modal) {
-  if(event.target == modal) {
-    modal.style.display = "none";
+  else {
+    removePostingTools();
   }
+  addHeader();
 }
 
 function getbId() {

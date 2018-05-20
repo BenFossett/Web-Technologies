@@ -61,3 +61,23 @@ function makeUserNavbar(username, avatar) {
   </div>
   `;
 }
+
+function removePostingTools() {
+  var form = document.querySelector("#postingTools");
+  var content = "<h3>Please log in to make a post</h3>";
+  form.innerHTML = content;
+}
+
+function displayModal(modal) {
+  modal.style.display = "block";
+}
+
+function closeModal(modal) {
+  modal.style.display = "none";
+}
+
+function closeModalWindow(modal) {
+  if(event.target == modal) {
+    modal.style.display = "none";
+  }
+}

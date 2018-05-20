@@ -18,13 +18,24 @@
         <div class="post-list">
         </div>
       </div>
-      <div class="new-post">
-        <form name="postForm" class="text-box" action="/makepost" method="POST">
-          <textarea name="post" rows="4" id="postcontent"></textarea>
-          <input type="hidden" id="postuid" name="postuid"/>
-          <input type="hidden" id="posttid" name="posttid"/>
-          <input type="submit" value="Submit" id="postbutton"/>
-        </form>
+      <div id="postingTools">
+        <button id="createThread">Post in Thread</button>
+        <div id="threadModal" class="modal">
+          <div class="modalContent">
+            <div class="modalHeader">
+              <h2>Creating Post</h2>
+              <span class="close">X</span>
+            </div>
+            <div class="modalBody">
+              <form class="text-box" action="/makepost" method="POST">
+                <textarea name="post" rows="4" id="postcontent"></textarea>
+                <input type="hidden" id="postuid" name="postuid"/>
+                <input type="hidden" id="posttid" name="posttid"/>
+                <input type="submit" value="Submit" id="postbutton"/>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>
