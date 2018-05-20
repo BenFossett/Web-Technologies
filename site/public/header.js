@@ -54,12 +54,22 @@ function makeUserNavbar(username, avatar) {
     <a href="/usersettings.html" class="top-button">`
     + username
     + `</a>
+    <a id='log_out' class="top-button">Logout</a>
     <div class="search-container">
       <input type="text" placeholder="Search..."/>
       <button type="submit">Submit</button>
     </div>
   </div>
   `;
+  document.getElementById("log_out").addEventListener("click", Log_Out);
+}
+
+function Log_Out(){
+  var q = new XMLHttpRequest();
+  q.onreadystatechange = ready;
+  function ready(){location.reload();}
+  q.open("GET", "/log_out", true);
+  q.send();
 }
 
 function removePostingTools() {
