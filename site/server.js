@@ -83,6 +83,8 @@ function handle(request, response) {
     var url = request.url.toLowerCase();
     checkCookie(request, response);
     console.log("url=", url);
+    if (url == "/log_out")
+      console.log("///////////////////////////////////////////////");
     if (url.startsWith("/log_in.html")) return getLog_In(response);
     if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
@@ -91,6 +93,7 @@ function handle(request, response) {
     if (url.startsWith("/threadslist")) return getThreadList(url, response);
     if (url.startsWith("/thread.html")) return getThread(url, response);
     if (url.startsWith("/postslist")) return getPostList(url, response);
+    if (url == "/log_out") return Log_Out(request, response);
     if (url == "/log_in") return Log_In(request, response);
     if (url == "/makepost") return makePost(request, response);
     if (url == "/makethread") return makeThread(request, response);
@@ -130,8 +133,8 @@ function checkCookie(request, response) {
   else {
     session = crypto.randomBytes(16).toString('hex');
     insertSession.all(session);
-    selectSession.all(ready2);
-    function ready2(err, item){console.log("the cookies are " +item);}
+    //selectSession.all(ready2);
+    //function ready2(err, item){console.log("the cookies are " + JSON.stringify(item));}
     response.setHeader("Set-Cookie", "session="+session);
   }
 }
@@ -381,6 +384,18 @@ function Log_In(request, response) {
       }
     }
   }
+}
+
+function Log_Out(request, response) {
+    var cookies = request.headers['cookie'];
+    var session;
+    if(cookies != undefined) {
+      session = getCookie(cookies);
+      updateSession.run(null, session, ready);
+    }
+    function ready(err){
+      deliver(response, types.html, null, "page");
+    }
 }
 
 function makeThread(request, response) {
