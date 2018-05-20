@@ -79,6 +79,7 @@ function receive() {
                + '</p></div></div>';
     html = html + item;
   }
+  if (list.length == 0) html = "<h3>No threads here, be the first to make one!</h3>"
   var list = document.querySelector(".thread-list");
   list.innerHTML = html;
 }

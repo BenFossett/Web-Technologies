@@ -110,43 +110,38 @@ header {
 }
 
 .tabcontent {
-  background-color: red;
-  display: none;
+  height: auto;
+  display: block;
+  position: relative;
   text-align: center;
   width: 100%;
-  padding-top: 25%;
+  text-shadow: -1px -1px #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .tabcontent img {
-  display: block;
-  max-width: 100%;
-  width: auto;
+  vertical-align: top;
+  width: 100%;
   height: auto;
 }
 
 .tabcontent h3 {
+  position: absolute;
   text-align: right;
   color: white;
+  bottom: 16px;
+  right: 8px;
 }
 
 .tabcontent p {
+  position: absolute;
   margin-bottom: 0;
   text-align: right;
   color: white;
-}
-
-#Item2 {
-  background-image: url("images/tabheader1.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-#Item3 {
-  background-image: url("images/tabheader2.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  bottom: 16px;
+  right: 8px;
 }
 
 .table-container {

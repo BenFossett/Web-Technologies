@@ -427,7 +427,7 @@ function Register(request, response){
       session = getCookie(cookies);
     }
     console.log(user + password + email + avatar);
-    insertUser.run(user, email, password, avatar, ready);
+    insertUser.run(user, email, password, avatar + ".svg", ready);
     function ready(err){
       selectUser.get(user, password, Log_In_status);
       function Log_In_status(err, user){
@@ -585,41 +585,43 @@ function create() {
   db.run("drop table if exists sessions");
 
   db.run("create table users (uId integer primary key autoincrement, name text, email text, password text, avatar text)");
-  db.run("insert into users values (1, 'PoliticsMan', 'name1@example.com', 'badpassword', 'avi1.svg')");
-  db.run("insert into users values (2, 'WebsiteGuy', 'name2@example.com', 'badpassword', 'avi2.svg')");
-
   db.run("create table boards (bId integer primary key autoincrement, name text, description text)");
+  db.run("create table threads (tId integer primary key autoincrement, bId int, name text, creationDate datetime, foreign key (bId) references boards (bId))");
+  db.run("create table posts (pId integer primary key autoincrement, tId int, uId int, content text, creationDate datetime, foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
+  db.run("create table sessions (sId integer primary key autoincrement, uId int, session text, foreign key (uId) references users (uId))");
+
+
+  db.run("insert into users values (1, 'ForumUser', 'name1@example.com', 'badpassword', 'avi1.svg')");
+  db.run("insert into users values (2, 'WebsiteGuy', 'name2@example.com', 'badpassword', 'avi2.svg')");
+  db.run("insert into users values (3, 'PoliticMan', 'name3@example.com', 'badpassword', 'avi3.svg')");
+  db.run("insert into users values (4, 'IAmAUser', 'name4@example.com', 'badpassword', 'avi4.svg')");
+
   db.run("insert into boards values (1, 'Forum News and Announcements', 'Information about the forum is found here')");
-  db.run("insert into boards values (2, 'Global Politics', 'Political discussion about global news')");
-  db.run("insert into boards values (3, 'E.U. Politics', 'Political discussion regarding the European Union')");
-  db.run("insert into boards values (4, 'Off Topic', 'Non-Political Discussion')");
+  db.run("insert into boards values (2, 'General Politics', 'Broad discussions covering many areas of politics')");
+  db.run("insert into boards values (3, 'Political Events', 'Talk about specific political events such as elections here')");
+  db.run("insert into boards values (4, 'Off Topic', 'If not relevant to politics, it goes here')");
   db.run("insert into boards values (5, 'Support', 'Feedback, bugs, complaints go here')");
 
-  db.run("create table threads (tId integer primary key autoincrement, bId int, name text, creationDate datetime, foreign key (bId) references boards (bId))");
-  db.run("insert into threads values (1, 1, 'Forum Rules and Guidelines', datetime('now'))");
-  db.run("insert into threads values (2, 1, 'Introductions', datetime('now'))");
+  db.run("insert into threads values (1, 1, 'Introductions Thread', datetime('now'))");
+  db.run("insert into posts values (1, 1, 1, 'Hey guys, come and introduce yourselves. I am ForumUser!', datetime('now'))");
+  db.run("insert into posts values (2, 1, 2, 'Hi everyone, WebsiteGuy here.', datetime('now'))");
+  db.run("insert into posts values (3, 1, 3, 'hello i am politicman', datetime('now'))");
+  db.run("insert into posts values (4, 1, 4, 'IAmAUser, nice to meet you all.', datetime('now'))");
+
+  db.run("insert into threads values (2, 2, 'Theresa May vs. Jeremy Corbyn', datetime('now'))");
+  db.run("insert into posts values (5, 2, 1, 'Which one would you rather see running the country right now?', datetime('now'))");
+  db.run("insert into posts values (6, 2, 4, 'I prefer Corbyn.', datetime('now'))");
+  db.run("insert into posts values (7, 2, 2, 'You brits have the worst politicians lol', datetime('now'))");
+
   db.run("insert into threads values (3, 2, 'Trump and North Korea', datetime('now'))");
-  db.run("insert into threads values (4, 3, 'Brexit Debate Thread', datetime('now'))");
-  db.run("insert into threads values (5, 4, 'Funniest Memes', datetime('now'))");
-  db.run("insert into threads values (6, 5, 'Planned Bugfixes', datetime('now'))");
-  db.run("insert into threads values (7, 2, 'Has Trump gone too far?', datetime('now'))");
-  db.run("insert into threads values (8, 3, 'May vs. Corbyn', datetime('now'))");
-  db.run("insert into threads values (9, 5, 'how do i make a post?', datetime('now'))");
-  db.run("insert into threads values (10, 2, 'Should the U.S. have universal healthcare?', datetime('now'))");
+  db.run("insert into posts values (8, 3, 2, 'How do you guys think this is all going to go down?', datetime('now'))");
+  db.run("insert into posts values (9, 3, 1, 'Progress is being made, I just hope neither side does anything to ruin that.', datetime('now'))");
+  db.run("insert into posts values (10, 3, 4, 'Trump should spend less time on Twitter.', datetime('now'))");
+  db.run("insert into posts values (11, 3, 3, 'trump did a good job i think', datetime('now'))");
 
-  db.run("create table posts (pId integer primary key autoincrement, tId int, uId int, content text, creationDate datetime, foreign key (tId) references threads (tId), foreign key (uId) references users (uId))");
-  db.run("insert into posts values (1, 1, 1, 'rules', datetime('now'))");
-  db.run("insert into posts values (2, 2, 2, 'hello i am user', datetime('now'))");
-  db.run("insert into posts values (3, 3, 1, 'What does everyone think about...', datetime('now'))");
-  db.run("insert into posts values (4, 4, 1, 'breakfast', datetime('now'))");
-  db.run("insert into posts values (5, 5, 2, 'pepe', datetime('now'))");
-  db.run("insert into posts values (6, 6, 2, 'get this damn site finished by monday', datetime('now'))");
-  db.run("insert into posts values (7, 7, 1, 'yes', datetime('now'))");
-  db.run("insert into posts values (8, 8, 1, 'pmqs', datetime('now'))");
-  db.run("insert into posts values (9, 9, 1, 'i dont no how please help me', datetime('now'))");
-  db.run("insert into posts values (10, 10, 1, 'should they???', datetime('now'))");
-
-  db.run("create table sessions (sId integer primary key autoincrement, uId int, session text, foreign key (uId) references users (uId))");
+  db.run("insert into threads values (4, 2, 'Is it time for guns to be restricted in the U.S?', datetime('now'))");
+  db.run("insert into posts values (12, 4, 4, 'I think it is pretty clear that something needs to be done, and soon.', datetime('now'))");
+  db.run("insert into posts values (13, 4, 3, 'you will never take our guns', datetime('now'))");
 }
 
 start();
