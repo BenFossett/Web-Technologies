@@ -6,6 +6,7 @@ function start() {
   var cookies = document.cookie;
   var cookieArray = cookies.split("; ");
   getUser();
+  succeedOrFail();
 }
 
 function getUser() {
@@ -28,4 +29,11 @@ function receiveUser() {
     removePostingTools();
   }
   addHeader();
+}
+
+function succeedOrFail() {
+  var url = window.location.href;
+  var value = url.split("#")[1];
+  if(value == null) return;
+  if(value == "failed") console.log("failed");
 }
