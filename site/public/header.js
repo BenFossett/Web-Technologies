@@ -28,7 +28,7 @@ function makeDefaultNavbar() {
     </div>
     <div id="top-navbar">
       <a href="log_in.html" class="top-button">Login</a>
-      <a href="#" class="top-button">Register</a>
+      <a href="register.html" class="top-button">Register</a>
       <div class="search-container">
         <input type="text" placeholder="Search..."/>
         <button type="submit">Submit</button>
