@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  lang="en-GB" xml:lang="en-GB">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Title: Board</title>
+    <link href="/mainstyle.css" rel="stylesheet" type="text/css" />
+    <script src="usersettings.js"></script>
+    <script src="header.js"></script>
+  </head>
+  <body>
+    <header>
+    </header>
+    <div class="main">
+      <h1>Register</h1>
+      <form action="/register" method="POST">
+        <div class="table-a">
+          <div class="box-title">
+            <p>Choose Display Name</p>
+          </div>
+          <div class="box-content">
+            <p>New Username:</p>
+            <input type="text" name="user"/><br/>
+            <p>Password:</p>
+            <input type="password" name="passwd"/><br/>
+            <p>Confirm New Password:</p>
+            <input type="password" name="confirmpassword"/><br/>
+            <p>Email Address</p>
+            <input type="text" name="email"/><br/>
+            <input type="submit" value='Confirm'/>
+          </div>
+        </div>
+        <div class="table-a">
+          <div class="box-title">
+            <p>Choose Avatar</p>
+          </div>
+          <div class="box-content">
+              <input type="radio" name="avatar" value="avi1" checked="checked"/><img src="images/avi1.svg"/>
+              <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/>
+              <input type="radio" name="avatar" value="avi1"/><img src="images/avi1.svg"/>
+              <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/><br/>
+              <input type="radio" name="avatar" value="avi1"/><img src="images/avi1.svg"/>
+              <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/>
+              <input type="radio" name="avatar" value="avi1"/><img src="images/avi1.svg"/>
+              <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/><br/>
+          </div>
+        </div>
+      </form>
+    </div>
+  <footer>
+    <form>
+      <input type="hidden" id="useruid"/>
+      <input type="hidden" id="username"/>
+      <input type="hidden" id="useravatar"/>
+      <input type="hidden" id="useremail"/>
+    </form>
+  </footer>
+  </body>
+</html>
