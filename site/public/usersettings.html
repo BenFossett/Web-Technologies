@@ -4,12 +4,63 @@
   <head>
     <meta charset="UTF-8"/>
     <title>Title: Board</title>
-    <link href="/style.css" rel="stylesheet" type="text/css" />
+    <link href="/mainstyle.css" rel="stylesheet" type="text/css" />
+    <script src="usersettings.js"></script>
+    <script src="header.js"></script>
   </head>
   <body>
     <header>
     </header>
     <div class="main">
+      <h1>User Settings</h1>
+      <div class="table-a">
+        <div class="box-title">
+          <p>Change Display Name</p>
+        </div>
+        <div class="box-content">
+          <form action="/changeusername" method="POST">
+            <p>New Username:</p>
+            <input type="text" name="newname"/><br/>
+            <p>Password:</p>
+            <input type="text" name="password"/><br/>
+            <input type="submit"/>
+          </form>
+        </div>
+      </div>
+      <div class="table-a">
+        <div class="box-title">
+          <p>Change Avatar</p>
+        </div>
+        <div class="box-content">
+          <form action="/changeavatar" method="POST">
+            <input type="radio" name="avatar" value="avi1" checked="checked"/><img src="images/avi1.svg"/>
+            <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/>
+            <input type="radio" name="avatar" value="avi1"/><img src="images/avi1.svg"/>
+            <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/><br/>
+            <input type="radio" name="avatar" value="avi1"/><img src="images/avi1.svg"/>
+            <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/>
+            <input type="radio" name="avatar" value="avi1"/><img src="images/avi1.svg"/>
+            <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/><br/>
+            <input type="submit"/>
+          </form>
+        </div>
+      </div>
+      <div class="table-a">
+        <div class="box-title">
+          <p>Change Password</p>
+        </div>
+        <div class="box-content">
+          <form action="/changepassword" method="POST">
+            <p>New Password:</p>
+            <input type="text" name="newpassword"/><br/>
+            <p>Confirm New Password:</p>
+            <input type="text" name="confirmpassword"/><br/>
+            <p>Current Password:</p>
+            <input type="text" name="currentpassword"/><br/>
+            <input type="submit"/>
+          </form>
+        </div>
+      </div>
     </div>
   <footer>
     <form>

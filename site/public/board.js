@@ -62,7 +62,6 @@ function receive() {
   var list = JSON.parse(this.responseText);
   var html = "";
   var i;
-  console.log(list[0]);
   for(i = 0; i < list.length; i++) {
     var count = list[i].c;
     var item = '<div class="threads-item"><div class="thread-column"><a href="thread.html?id='

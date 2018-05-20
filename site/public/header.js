@@ -51,7 +51,7 @@ function makeUserNavbar(username, avatar) {
     + avatar
     + '"/>'
     + `</a>
-    <a href="#" class="top-button">`
+    <a href="/usersettings.html" class="top-button">`
     + username
     + `</a>
     <div class="search-container">

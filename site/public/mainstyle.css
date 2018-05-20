@@ -130,6 +130,7 @@ header {
 }
 
 .tabcontent p {
+  margin-bottom: 0;
   text-align: right;
   color: white;
 }
@@ -315,4 +316,12 @@ header {
 @keyframes animatetop {
   from {top: -300px; opacity: 0}
   to {top: 0; opacity: 1}
+}
+
+.box-content form {
+  display: block;
+}
+
+.box-content img {
+  width: 50px;
 }
