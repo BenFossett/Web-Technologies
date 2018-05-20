@@ -62,18 +62,19 @@ function receive() {
   var list = JSON.parse(this.responseText);
   var html = "";
   var i;
+  console.log(list[0]);
   for(i = 0; i < list.length; i++) {
     var count = list[i].c;
     var item = '<div class="threads-item"><div class="thread-column"><a href="thread.html?id='
                + list[i].tId
                +'"><p><strong>'
                + list[i].name
-               + '</strong></p></a><p><small>Created by: '
-               + 'thread creator'
-               + '</small></p></div><div class="latest-column"><p>'
+               + '</strong></p></a><p><small>Created on: '
                + list[i].creationDate
+               + '</small></p></div><div class="latest-column"><p>'
+               + list[i].postDate
                + '</p><p><small>By: '
-               + 'thread replier'
+               + list[i].username
                + '</small></p></div><div class="posts-column"><p>'
                + count.toString()
                + '</p></div></div>';
