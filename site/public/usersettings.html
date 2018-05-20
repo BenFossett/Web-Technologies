@@ -19,12 +19,15 @@
         </div>
         <div class="box-content">
           <form action="/changeusername" method="POST">
+            <input type="hidden" id="nameuid" name="formuid"/>
             <p>New Username:</p>
-            <input type="text" name="newname"/><br/>
+            <input type="text" name="newname" maxlength="20"/><br/>
             <p>Password:</p>
-            <input type="text" name="password"/><br/>
+            <input type="password" name="password"/><br/>
             <input type="submit"/>
           </form>
+          <div class="succeedMessage" id="succeedusername"></div>
+          <div class="failMessage" id="failedusername"></div>
         </div>
       </div>
       <div class="table-a">
@@ -33,6 +36,7 @@
         </div>
         <div class="box-content">
           <form action="/changeavatar" method="POST">
+            <input type="hidden" id="aviuid" name="formuid"/>
             <input type="radio" name="avatar" value="avi1" checked="checked"/><img src="images/avi1.svg"/>
             <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/>
             <input type="radio" name="avatar" value="avi1"/><img src="images/avi1.svg"/>
@@ -43,6 +47,8 @@
             <input type="radio" name="avatar" value="avi2"/><img src="images/avi2.svg"/><br/>
             <input type="submit"/>
           </form>
+          <div class="succeedMessage" id="succeedavatar"></div>
+          <div class="failMessage" id="failedavatar"></div>
         </div>
       </div>
       <div class="table-a">
@@ -51,14 +57,17 @@
         </div>
         <div class="box-content">
           <form action="/changepassword" method="POST">
+            <input type="hidden" id="passuid" name="formuid"/>
             <p>New Password:</p>
-            <input type="text" name="newpassword"/><br/>
+            <input type="password" name="newpassword"/><br/>
             <p>Confirm New Password:</p>
-            <input type="text" name="confirmpassword"/><br/>
+            <input type="password" name="confirmpassword"/><br/>
             <p>Current Password:</p>
-            <input type="text" name="currentpassword"/><br/>
+            <input type="password" name="currentpassword"/><br/>
             <input type="submit"/>
           </form>
+          <div class="succeedMessage" id="succeedpassword"></div>
+          <div class="failMessage" id="failedpassword"></div>
         </div>
       </div>
     </div>

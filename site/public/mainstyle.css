@@ -325,3 +325,11 @@ header {
 .box-content img {
   width: 50px;
 }
+
+.succeedMessage {
+  color: green;
+}
+
+.failMessage {
+  color: red;
+}

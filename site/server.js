@@ -41,6 +41,11 @@ var selectBoardName = db.prepare("select name from boards where bId=?");
 var selectThreadName = db.prepare("select name from threads where tId=?");
 
 var selectUser = db.prepare("select * from users where name=? and password=?");
+var selectUserById = db.prepare("select * from users where uId=?");
+var updateUsername = db.prepare("update users set name=? where uId=?");
+var updateAvatar = db.prepare("update users set avatar=? where uId=?");
+var updatePassword = db.prepare("update users set password=? where uId=?");
+
 var updateSession = db.prepare("update sessions set uId=? where session=?");
 var selectSession = db.prepare("select * from sessions");
 var selectAllBoards = db.prepare("select * from boards");
@@ -98,7 +103,9 @@ function handle(request, response) {
     if (url == "/makepost") return makePost(request, response);
     if (url == "/makethread") return makeThread(request, response);
     if (url == "/getcurrentuser") return getCurrentUser(request, response);
-    if (url == "/newsession") return createNewSession(response);
+    if (url == "/changeusername") return changeUsername(request, response);
+    if (url == "/changeavatar") return changeAvatar(request, response);
+    if (url == "/changepassword") return changePassword(request, response);
     if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url);
     if (type == null) return fail(response, BadType, "File type unsupported");
@@ -424,6 +431,105 @@ function makeThread(request, response) {
 function postInThread(response, uId, content, tId) {
   insertPost.run(tId, uId, content, ready);
   function ready(err) { reply(response, tId); }
+}
+
+function changeUsername(request, response) {
+  request.on('data', add);
+  request.on('end', end);
+  var body = "";
+
+  function add(chunk) {
+    body = body + chunk.toString();
+  }
+  function end() {
+    var parts = QS.parse(body);
+    var uId = parts.formuid;
+    var newname = parts.newname;
+    var password = parts.password;
+    if(uId != "") {
+      selectUserById.get(uId, ready);
+      function ready(err, user) {
+        if(user.password == password) {
+          updateUsername.run(newname, uId, succeed);
+          function succeed() {
+            backToUserSettings("#succeedusername", response);
+          }
+        }
+        else {
+          backToUserSettings("#failedusername", response);
+        }
+      }
+    }
+    else {
+      backToUserSettings("#failedusername", response);
+    }
+  }
+}
+
+function changeAvatar(request, response) {
+  request.on('data', add);
+  request.on('end', end);
+  var body = "";
+
+  function add(chunk) {
+    body = body + chunk.toString();
+  }
+  function end() {
+    var parts = QS.parse(body);
+    console.log("here")
+    var uId = parts.formuid;
+    var avatar = parts.avatar + ".svg";
+    if(uId != "") {
+        console.log("here2");
+        updateAvatar.run(avatar, uId, succeed);
+        function succeed() {
+          backToUserSettings("#succeedavatar", response);
+        }
+      }
+    else {
+      backToUserSettings("#failedavatar", response);
+    }
+  }
+}
+
+function changePassword(request, response) {
+  request.on('data', add);
+  request.on('end', end);
+  var body = "";
+
+  function add(chunk) {
+    body = body + chunk.toString();
+  }
+  function end() {
+    var parts = QS.parse(body);
+    var uId = parts.formuid;
+    var newpassword = parts.newpassword;
+    var confirmpassword = parts.confirmpassword;
+    var currentpassword = parts.currentpassword;
+    if(uId != "" && newpassword == confirmpassword) {
+      selectUserById.get(uId, ready);
+      function ready(err, user) {
+        if(user.password == currentpassword) {
+          updatePassword.run(newpassword, uId, succeed);
+          function succeed() {
+            backToUserSettings("#succeedpassword", response);
+          }
+        }
+        else {
+          backToUserSettings("#failedpassword", response);
+        }
+      }
+    }
+    else {
+      backToUserSettings("#failedpassword", response);
+    }
+  }
+}
+
+function backToUserSettings(message, response) {
+  var redir = { Location: "/usersettings.html" + message };
+  response.writeHead(301, redir);
+  response.end();
 }
 
 // Prepared statements for use in database
