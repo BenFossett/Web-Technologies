@@ -397,7 +397,7 @@ function Log_In(request, response) {
         }
       }
       else {
-        var redir = { Location: "/log_in.html"};
+        var redir = { Location: "/log_in.html#failedlogin"};
         response.writeHead(301, redir);
         response.end();
       }
@@ -432,11 +432,18 @@ function Register(request, response){
     var cookies = request.headers['cookie'];
     var email = parts.email;
     var avatar = parts.avatar;
+    var confirm = parts.confirmpassword;
     var session;
     if(cookies != undefined) {
       session = getCookie(cookies);
     }
     console.log(user + password + email + avatar);
+    if(password != confirm) {
+      var redir = { Location: "/register.html#failedregister" };
+      response.writeHead(301, redir);
+      response.end();
+      return;
+    }
     insertUser.run(user, email, password, avatar + ".svg", ready);
     function ready(err){
       selectUser.get(user, password, Log_In_status);

@@ -25,9 +25,6 @@ function receiveUser() {
     document.getElementById("useravatar").value = user.avatar;
     document.getElementById("useremail").value = user.email;
   }
-  else {
-    removePostingTools();
-  }
   addHeader();
 }
 
@@ -35,5 +32,7 @@ function succeedOrFail() {
   var url = window.location.href;
   var value = url.split("#")[1];
   if(value == null) return;
-  if(value == "failed") console.log("failed");
+  if(value == "failedregister") {
+    document.getElementById(value).innerHTML = "Failed to register, please try again.";
+  };
 }

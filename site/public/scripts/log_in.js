@@ -6,6 +6,7 @@ function start() {
   var session = document.cookie.split(";")[0].split("=")[1];
   document.getElementById("session").value = session;
   getUser();
+  succeedOrFail();
 }
 
 function getUser() {
@@ -25,4 +26,13 @@ function receiveUser() {
     document.getElementById("useremail").value = user.email;
   }
   addHeader();
+}
+
+function succeedOrFail() {
+  var url = window.location.href;
+  var value = url.split("#")[1];
+  if(value == null) return;
+  if(value == "failedlogin") {
+    document.getElementById(value).innerHTML = "Failed to log in, please try again.";
+  }
 }
