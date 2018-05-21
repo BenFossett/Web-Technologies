@@ -47,7 +47,7 @@ var updateAvatar = db.prepare("update users set avatar=? where uId=?");
 var updatePassword = db.prepare("update users set password=? where uId=?");
 
 var updateSession = db.prepare("update sessions set uId=? where session=?");
-var selectSession = db.prepare("select * from sessions");
+var selectSession = db.prepare("select * from sessions where session=?");
 var selectAllBoards = db.prepare("select * from boards");
 var selectPopularThreads = db.prepare("select threads.name, posts.tId, count(*) as c from threads inner join posts on threads.tId = posts.tId group by posts.tId having c >= 0 order by c desc");
 var selectBoardThreads = db.prepare("select threads.tId, threads.name, threads.creationDate, posts.creationDate as postDate, users.name as username, count(*) as c from threads inner join posts on threads.tId = posts.tId inner join users on posts.uId = users.uId where threads.bId = ? group by posts.tId having c >= 0 order by threads.creationDate desc");
@@ -86,11 +86,12 @@ function checkSite() {
 
 // Serve a request by delivering a file.
 function handle(request, response) {
-    var url = request.url.toLowerCase();
     checkCookie(request, response);
+}
+
+function continueHandle(request, response) {
+    var url = request.url.toLowerCase();
     console.log("url=", url);
-    if (url == "/log_out")
-      console.log("///////////////////////////////////////////////");
     if (url.startsWith("/log_in.html")) return getLog_In(response);
     if (url.endsWith("/")) url = url + "index.html";
     if (url == "/boards") return getBoardList(response);
@@ -137,14 +138,23 @@ function checkCookie(request, response) {
   }
 
   if(hasSession == true) {
-    response.setHeader("Set-Cookie", "session="+session);
+    selectSession.get(session, ready2);
+    function ready2(err, item) {
+      console.log("the cookies are" + JSON.stringify(item));
+      if (item != undefined) response.setHeader("Set-Cookie", "session="+session);
+      else {
+        session = crypto.randomBytes(16).toString('hex');
+        insertSession.all(session);
+        response.setHeader("Set-Cookie", "session="+session);
+      }
+      continueHandle(request, response);
+    }
   }
   else {
     session = crypto.randomBytes(16).toString('hex');
     insertSession.all(session);
-    //selectSession.all(ready2);
-    //function ready2(err, item){console.log("the cookies are " + JSON.stringify(item));}
     response.setHeader("Set-Cookie", "session="+session);
+    continueHandle(request, response);
   }
 }
 
