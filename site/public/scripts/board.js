@@ -76,7 +76,7 @@ function receive() {
                + list[i].username
                + '</small></p></div><div class="posts-column"><p>'
                + count.toString()
-               + '</p></div></div>';
+               + ' posts</p></div></div>';
     html = html + item;
   }
   if (list.length == 0) html = "<h3>No threads here, be the first to make one!</h3>"

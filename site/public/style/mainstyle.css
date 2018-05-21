@@ -267,6 +267,11 @@ header {
   display: inline-block;
 }
 
+.text-box h3 {
+  text-align: left;
+  color: black;
+}
+
 .text-box textarea,
 .text-box #titlebox {
   display: block;
@@ -323,12 +328,13 @@ header {
 
 .modalHeader {
   padding: 2px 16px;
-  background-color: red;
+  background-color: #3A435E;
   color: white;
 }
 
 .modalBody {
   padding: 2px 16px;
+  background-color: #DCE4E8;
 }
 
 @keyframes animatetop {

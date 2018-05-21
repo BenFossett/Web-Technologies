@@ -2,7 +2,6 @@
 
 function addHeader(){
   var uId = document.getElementById("useruid").value;
-  console.log("test");
   if(uId != "") {
     var username = document.getElementById("username").value;
     var avatar = document.getElementById("useravatar").value;
@@ -35,7 +34,6 @@ function makeDefaultNavbar() {
 }
 
 function makeUserNavbar(username, avatar) {
-  console.log(avatar);
   var header = document.querySelector("header");
   header.innerHTML = `
   <div id="logo">

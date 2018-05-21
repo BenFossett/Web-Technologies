@@ -28,7 +28,6 @@ function receiveUser() {
   if(this.responseText != "data not found") {
     var user = JSON.parse(this.responseText);
     document.getElementById("useruid").value = user.uId;
-    console.log(user.uId);
     document.getElementById("username").value = user.name;
     document.getElementById("useravatar").value = user.avatar;
     document.getElementById("useremail").value = user.email;

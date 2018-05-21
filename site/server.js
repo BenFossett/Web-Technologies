@@ -140,7 +140,6 @@ function checkCookie(request, response) {
   if(hasSession == true) {
     selectSession.get(session, ready2);
     function ready2(err, item) {
-      console.log("the cookies are" + JSON.stringify(item));
       if (item != undefined) response.setHeader("Set-Cookie", "session="+session);
       else {
         session = crypto.randomBytes(16).toString('hex');
@@ -437,7 +436,6 @@ function Register(request, response){
     if(cookies != undefined) {
       session = getCookie(cookies);
     }
-    console.log(user + password + email + avatar);
     if(password != confirm) {
       var redir = { Location: "/register.html#failedregister" };
       response.writeHead(301, redir);
@@ -537,11 +535,9 @@ function changeAvatar(request, response) {
   }
   function end() {
     var parts = QS.parse(body);
-    console.log("here")
     var uId = parts.formuid;
     var avatar = parts.avatar + ".svg";
     if(uId != "") {
-        console.log("here2");
         updateAvatar.run(avatar, uId, succeed);
         function succeed() {
           backToUserSettings("#succeedavatar", response);
