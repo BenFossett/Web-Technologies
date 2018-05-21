@@ -18,7 +18,7 @@ function makeDefaultNavbar() {
   if (header.className == "log_in"){
     header.innerHTML = `
       <div id="logo">
-        <a href="index.html">Home</a>
+        <a href="index.html">Logo</a>
       </div>`;
   }
   else {
