@@ -606,8 +606,12 @@ function create() {
 
   db.run("insert into users values (1, 'ForumUser', 'name1@example.com', 'badpassword', 'avi1.svg')");
   db.run("insert into users values (2, 'WebsiteGuy', 'name2@example.com', 'badpassword', 'avi2.svg')");
-  db.run("insert into users values (3, 'PoliticMan', 'name3@example.com', 'badpassword', 'avi3.svg')");
-  db.run("insert into users values (4, 'IAmAUser', 'name4@example.com', 'badpassword', 'avi4.svg')");
+  db.run("insert into users values (3, 'RepublicRob', 'name3@example.com', 'badpassword', 'avi3.svg')");
+  db.run("insert into users values (4, 'DemocratDan', 'name4@example.com', 'badpassword', 'avi4.svg')");
+  db.run("insert into users values (5, 'EuroDude', 'name5@example.com', 'badpassword', 'avi5.svg')");
+  db.run("insert into users values (6, 'LionAvatar', 'name6@example.com', 'badpassword', 'avi6.svg')");
+  db.run("insert into users values (7, 'DiscussMan', 'name7@example.com', 'badpassword', 'avi7.svg')");
+  db.run("insert into users values (8, 'PeacePerson', 'name8@example.com', 'badpassword', 'avi8.svg')");
 
   db.run("insert into boards values (1, 'Forum News and Announcements', 'Information about the forum is found here')");
   db.run("insert into boards values (2, 'General Politics', 'Broad discussions covering many areas of politics')");
@@ -620,21 +624,28 @@ function create() {
   db.run("insert into posts values (2, 1, 2, 'Hi everyone, WebsiteGuy here.', datetime('now'))");
   db.run("insert into posts values (3, 1, 3, 'hello i am politicman', datetime('now'))");
   db.run("insert into posts values (4, 1, 4, 'IAmAUser, nice to meet you all.', datetime('now'))");
+  db.run("insert into posts values (14, 1, 5, 'Hello, I am EuroDude', datetime('now'))");
+  db.run("insert into posts values (15, 1, 6, 'i have a lion avatar', datetime('now'))");
+  db.run("insert into posts values (16, 1, 7, 'DiscussMan here, how is everyone doing', datetime('now'))");
+  db.run("insert into posts values (17, 1, 8, 'Peace out', datetime('now'))");
 
   db.run("insert into threads values (2, 2, 'Theresa May vs. Jeremy Corbyn', datetime('now'))");
   db.run("insert into posts values (5, 2, 1, 'Which one would you rather see running the country right now?', datetime('now'))");
   db.run("insert into posts values (6, 2, 4, 'I prefer Corbyn.', datetime('now'))");
   db.run("insert into posts values (7, 2, 2, 'You brits have the worst politicians lol', datetime('now'))");
+  db.run("insert into posts values (18, 2, 6, 'theresa may is the better option', datetime('now'))");
 
   db.run("insert into threads values (3, 2, 'Trump and North Korea', datetime('now'))");
   db.run("insert into posts values (8, 3, 2, 'How do you guys think this is all going to go down?', datetime('now'))");
   db.run("insert into posts values (9, 3, 1, 'Progress is being made, I just hope neither side does anything to ruin that.', datetime('now'))");
   db.run("insert into posts values (10, 3, 4, 'Trump should spend less time on Twitter.', datetime('now'))");
   db.run("insert into posts values (11, 3, 3, 'trump did a good job i think', datetime('now'))");
+  db.run("insert into posts values (19, 3, 8, 'Hoping for a peaceful resolution', datetime('now'))");
 
   db.run("insert into threads values (4, 2, 'Is it time for guns to be restricted in the U.S?', datetime('now'))");
   db.run("insert into posts values (12, 4, 4, 'I think it is pretty clear that something needs to be done, and soon.', datetime('now'))");
   db.run("insert into posts values (13, 4, 3, 'you will never take our guns', datetime('now'))");
+  db.run("insert into posts values (20, 4, 7, 'Definitely, enough is enough', datetime('now'))");
 }
 
 start();
