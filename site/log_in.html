@@ -13,15 +13,21 @@
     <header class="log_in">
     </header>
     <div class="main">
-      <form method="post" action="/log_in">
-        <input name="user" placeholder="username" type="text" maxlength="20" tabindex="1"/>
-        <input name="passwd" placeholder="password" type="password" tabindex="1"/>
-        <input type="hidden" id="session" name='session'/>
-        <input type="submit" value="Login"/>
-        <div class="submit">
-          <button class="btn" type="submit" tabindex="1">login</button>
+      <div class="table-a">
+        <div class="box-title">
+          <p>Log In</p>
         </div>
-      </form>
+        <div class="box-content">
+          <form method="post" action="/log_in">
+            <p>Username:</p>
+            <input name="user" type="text" maxlength="20"/>
+            <p>Password:</p>
+            <input name="passwd" type="password"/>
+            <input type="hidden" id="session" name='session'/><br/>
+            <input class="submit-button" type="submit" value="Login"/>
+          </form>
+        </div>
+      </div>
     </div>
   <footer>
     <form>

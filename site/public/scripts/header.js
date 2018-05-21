@@ -18,21 +18,17 @@ function makeDefaultNavbar() {
   if (header.className == "log_in"){
     header.innerHTML = `
       <div id="logo">
-        <a href="index.html">Logo</a>
+        <a href="index.html"><img src="images/logo.svg"/></a>
       </div>`;
   }
   else {
     header.innerHTML = `
     <div id="logo">
-      <a href="index.html">LOGO</a>
+      <a href="index.html"><img src="images/logo.svg"/></a>
     </div>
     <div id="top-navbar">
       <a href="log_in.html" class="top-button">Login</a>
       <a href="register.html" class="top-button">Register</a>
-      <div class="search-container">
-        <input type="text" placeholder="Search..."/>
-        <button type="submit">Submit</button>
-      </div>
     </div>
     `;
   }
@@ -43,22 +39,16 @@ function makeUserNavbar(username, avatar) {
   var header = document.querySelector("header");
   header.innerHTML = `
   <div id="logo">
-    <a href="index.html">LOGO</a>
+    <a href="index.html"><img src="images/logo.svg"/></a>
   </div>
-  <div id="top-navbar">
-    <a href="#" class="avatar">`
+  <div id="top-navbar">`
     + '<img src="images/'
     + avatar
     + '"/>'
-    + `</a>
-    <a href="/usersettings.html" class="top-button">`
+    + `<a href="/usersettings.html" class="top-button">`
     + username
     + `</a>
     <a id='log_out' class="top-button">Logout</a>
-    <div class="search-container">
-      <input type="text" placeholder="Search..."/>
-      <button type="submit">Submit</button>
-    </div>
   </div>
   `;
   document.getElementById("log_out").addEventListener("click", Log_Out);

@@ -4,12 +4,14 @@ body { min-width: 640px; }
 
 body { font-family: Arial, Helvetica, FreeSans, sans-serif; }
 
+body { background-color: #05181C; }
+
 header {
   position: fixed;
   top: 0;
   width: 100%;
   box-shadow: 0 0 8px 3px;
-  background-color: rgba(233, 233, 233, 0.95);
+  background-color: #DCE4E8;
   z-index: 1;
 }
 
@@ -18,17 +20,25 @@ header {
   overflow: hidden;
 }
 
+#logo img {
+  height: 75%;
+  margin-top: 5%;
+  margin-bottom: 10%;
+}
+
 #logo a {
+  height: 50px;
   display: block;
   color: black;
   text-align: center;
-  padding: 14px 16px;
+  padding: 0;
+  margin-left: 5px;
   text-decoration: none;
   font-size: 120%;
 }
 
 #top-navbar {
-  float: center;
+  float: right;
   overflow: hidden;
 }
 
@@ -43,7 +53,7 @@ header {
 }
 
 #top-navbar a:hover {
-  background-color: #ddd;
+  background-color: #b8c2c6;
   color: black;
 }
 
@@ -69,18 +79,12 @@ header {
   font-size: 120%;;
 }
 
-#top-navbar .avatar {
+#top-navbar img {
+  float: left;
   height: 45px;
   padding-left: 0px;
   padding-right: 0px;
-  padding-top: auto;
-  padding-bottom: auto;
-  height: 45px;
-}
-
-#top-navbar img {
-  width: 45px;
-  height: 45px;
+  margin-top: 3px;
 }
 
 .main {
@@ -90,24 +94,35 @@ header {
   margin-top: 70px;
   margin-left: auto;
   margin-right: auto;
-  background-color: grey;
+  background-color: #455561;
   min-height: 1000px;
   height: auto;
   padding: 10px;
 }
 
+.main h1, h3 {
+  color: white;
+}
+
+.main h3 {
+  margin-top: 25px;
+  text-align: center;
+}
+
 * {box-sizing: border-box}
 
 .tablinks {
-  background-color: #555;
+  background-color: #3A435E;
   color: white;
   float: left;
-  border: none;
   outline: none;
   cursor: pointer;
   padding: 14px 16px;
   font-size: 120%;
   width: 25%;
+  border: 1px;
+  border-style: solid;
+  border-color: black;
 }
 
 .tabcontent {
@@ -151,17 +166,25 @@ header {
 }
 
 .table-a {
-  background-color: white;
+  background-color: #DCE4E8;
   display: block;
   text-align: left;
   float: left;
   width: 100%;
-  box-shadow: 0 0 8px 3px;
   margin-top: 10px;
 }
 
 .table-a > div {
   padding: 8px 12px 8px 12px;
+}
+
+.thread-list-container, .post-list-container {
+  float: none;
+}
+
+#postingTools {
+  margin-top: 15px;
+  margin-left: 10px;
 }
 
 .boards-box {
@@ -195,14 +218,13 @@ header {
 }
 
 .top-discussions {
-  background-color: white;
+  background-color: #DCE4E8;
   display: block;
   text-align: left;
   float: right;
   width: 39%;
   min-height: 300px;
   height: auto;
-  box-shadow: 0 0 8px 3px;
   margin-top: 10px;
 }
 
@@ -211,7 +233,7 @@ header {
 }
 
 .box-title {
-  background-color: red;
+  background-color: #3A435E;
   color: white;
 }
 
@@ -319,7 +341,16 @@ header {
 }
 
 .box-content img {
-  width: 50px;
+  width: 75px;
+}
+
+.box-content p {
+  margin-bottom: 3px;
+}
+
+.submit-button {
+  margin-top: 7px;
+  margin-bottom: 10px;
 }
 
 .succeedMessage {
